@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    missive (0.1.0)
+    missive (0.0.1.pre)
 
 GEM
   remote: https://rubygems.org/
