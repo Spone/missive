@@ -3,6 +3,7 @@ PATH
   specs:
     missive (0.0.1.pre)
       rails (>= 8.0.0)
+      time_for_a_boolean (>= 0.2.1)
 
 GEM
   remote: https://rubygems.org/
@@ -221,6 +222,9 @@ GEM
       rubocop-performance (~> 1.25.0)
     stringio (3.1.7)
     thor (1.4.0)
+    time_for_a_boolean (0.2.2)
+      activerecord
+      railties
     timeout (0.4.3)
     tsort (0.2.0)
     tzinfo (2.0.6)
