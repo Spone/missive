@@ -8,13 +8,13 @@ module Missive
 
     def receive
       case @payload
-      in { RecordType: "SubscriptionChange", ChangedAt: changed_at, SuppressSending: true, SuppressionReason: "HardBounce" }
+      in {RecordType: "SubscriptionChange", ChangedAt: changed_at, SuppressSending: true, SuppressionReason: "HardBounce"}
         # @customer.update!(bounced_at: changed_at, disabled_at: Time.current)
-      in { RecordType: "SubscriptionChange", ChangedAt: changed_at, SuppressSending: true, SuppressionReason: "SpamComplaint" }
+      in {RecordType: "SubscriptionChange", ChangedAt: changed_at, SuppressSending: true, SuppressionReason: "SpamComplaint"}
         # @customer.update!(complained_at: changed_at, disabled_at: Time.current)
-      in { RecordType: "SubscriptionChange", ChangedAt: changed_at, SuppressSending: true, SuppressionReason: "ManualSuppression" }
+      in {RecordType: "SubscriptionChange", ChangedAt: changed_at, SuppressSending: true, SuppressionReason: "ManualSuppression"}
         # @customer.update!(unsubscribed_at: changed_at, disabled_at: Time.current)
-      in { RecordType: "SubscriptionChange", ChangedAt: changed_at, SuppressSending: false }
+      in {RecordType: "SubscriptionChange", ChangedAt: changed_at, SuppressSending: false}
         # @customer.update!(disabled_at: nil, unsubscribed_at: nil, complained_at: nil, bounced_at: nil)
       end
 
