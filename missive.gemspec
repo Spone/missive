@@ -32,7 +32,9 @@ Gem::Specification.new do |spec|
   spec.require_paths = ["lib"]
 
   spec.add_dependency "rails", ">= 8.0.0"
+  spec.add_dependency "postmark-rails", ">= 0.22.1"
   spec.add_dependency "time_for_a_boolean", ">= 0.2.1"
+  spec.add_dependency "rails-pattern_matching", ">= 0.3.0"
 
   # For more information and examples about making a new gem, check out our
   # guide at: https://bundler.io/guides/creating_gem.html
