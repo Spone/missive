@@ -1,10 +1,11 @@
-# frozen_string_literal: true
+require "bundler/setup"
 
-require "bundler/gem_tasks"
-require "minitest/test_task"
+APP_RAKEFILE = File.expand_path("test/dummy/Rakefile", __dir__)
+load "rails/tasks/engine.rake"
 
-Minitest::TestTask.create
+load "rails/tasks/statistics.rake"
 
 require "standard/rake"
+require "bundler/gem_tasks"
 
 task default: %i[test standard]

@@ -1,5 +1,5 @@
 require "missive/version"
-require "missive/railtie"
+require "missive/engine"
 
 module Missive
   # Your code goes here...
