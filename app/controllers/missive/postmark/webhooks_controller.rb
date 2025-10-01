@@ -4,18 +4,18 @@ module Missive
 
     before_action :verify_webhook
     before_action :set_payload, only: :receive
-    before_action :set_customer, only: :receive
+    before_action :set_subscriber, only: :receive
 
     def receive
       case @payload
       in {RecordType: "SubscriptionChange", ChangedAt: changed_at, SuppressSending: true, SuppressionReason: "HardBounce"}
-        # @customer.update!(bounced_at: changed_at, disabled_at: Time.current)
+        # @subscriber.update!(bounced_at: changed_at, disabled_at: Time.current)
       in {RecordType: "SubscriptionChange", ChangedAt: changed_at, SuppressSending: true, SuppressionReason: "SpamComplaint"}
-        # @customer.update!(complained_at: changed_at, disabled_at: Time.current)
+        # @subscriber.update!(complained_at: changed_at, disabled_at: Time.current)
       in {RecordType: "SubscriptionChange", ChangedAt: changed_at, SuppressSending: true, SuppressionReason: "ManualSuppression"}
-        # @customer.update!(unsubscribed_at: changed_at, disabled_at: Time.current)
+        # @subscriber.update!(unsubscribed_at: changed_at, disabled_at: Time.current)
       in {RecordType: "SubscriptionChange", ChangedAt: changed_at, SuppressSending: false}
-        # @customer.update!(disabled_at: nil, unsubscribed_at: nil, complained_at: nil, bounced_at: nil)
+        # @subscriber.update!(disabled_at: nil, unsubscribed_at: nil, complained_at: nil, bounced_at: nil)
       end
 
       head :ok
@@ -33,8 +33,8 @@ module Missive
       @payload = JSON.parse(request.body.read).with_indifferent_access
     end
 
-    def set_customer
-      # @customer = Customer.find_by!(email: @payload[:Recipient])
+    def set_subscriber
+      # @subscriber = Customer.find_by!(email: @payload[:Recipient])
     end
 
     def webhooks_secret

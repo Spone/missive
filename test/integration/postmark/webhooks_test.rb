@@ -6,6 +6,7 @@ module Missive
 
     setup do
       @routes = Engine.routes
+      @headers = {"HTTP_X_POSTMARK_SECRET" => Rails.application.credentials.postmark.webhooks_secret}
     end
 
     def test_receive_bounce_payload
@@ -108,14 +109,18 @@ module Missive
       end
     end
 
+    def test_receive_wrong_secret
+      @payload = {"key" => "value"}
+      @headers = {"HTTP_X_POSTMARK_SECRET" => "WRONG"}
+
+      action
+      assert_equal 401, status
+    end
+
     private
 
     def action
-      post postmark_webhooks_path, headers:, env: {RAW_POST_DATA: @payload.to_json}
-    end
-
-    def headers
-      {"HTTP_X_POSTMARK_SECRET" => Rails.application.credentials.postmark.webhooks_secret}
+      post postmark_webhooks_path, headers: @headers, env: {RAW_POST_DATA: @payload.to_json}
     end
   end
 end
