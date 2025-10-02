@@ -6,7 +6,6 @@ module Missive
     before_action :set_payload, only: :receive
     before_action :set_subscriber, only: :receive
 
-    # TODO: support for "MessageStream"
     def receive
       case @payload
       in {RecordType: "SubscriptionChange", ChangedAt: changed_at, SuppressSending: true, SuppressionReason: suppression_reason}
