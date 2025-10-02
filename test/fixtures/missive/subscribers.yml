@@ -1,0 +1,9 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+john:
+  email: john@example.com
+
+jane:
+  email: jane@example.com
+  suppressed_at: 2025-10-02 02:00:05
+  suppression_reason: 1

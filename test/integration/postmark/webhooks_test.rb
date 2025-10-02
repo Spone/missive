@@ -7,16 +7,17 @@ module Missive
     setup do
       @routes = Engine.routes
       @headers = {"HTTP_X_POSTMARK_SECRET" => Rails.application.credentials.postmark.webhooks_secret}
+      @subscriber = missive_subscribers(:john)
     end
 
-    def test_receive_bounce_payload
+    test "receive bounce payload" do
       @payload = {
         "RecordType" => "SubscriptionChange",
         "MessageID" => "00000000-0000-0000-0000-000000000000",
         "ServerID" => 23,
         "MessageStream" => "outbound",
         "ChangedAt" => "2025-03-29T20:49:48Z",
-        "Recipient" => "john@example.com",
+        "Recipient" => @subscriber.email,
         "Origin" => "Recipient",
         "SuppressSending" => true,
         "SuppressionReason" => "HardBounce",
@@ -29,17 +30,19 @@ module Missive
 
       action
       assert_equal 200, status
-      # TODO: more assertions
+      @subscriber.reload
+      assert @subscriber.suppressed?
+      assert @subscriber.hard_bounce?
     end
 
-    def test_receive_spam_complaint_payload
+    test "receive spam complaint payload" do
       @payload = {
         "RecordType" => "SubscriptionChange",
         "MessageID" => "00000000-0000-0000-0000-000000000000",
         "ServerID" => 23,
         "MessageStream" => "outbound",
         "ChangedAt" => "2025-03-29T20:49:48Z",
-        "Recipient" => "john@example.com",
+        "Recipient" => @subscriber.email,
         "Origin" => "Recipient",
         "SuppressSending" => true,
         "SuppressionReason" => "SpamComplaint",
@@ -52,17 +55,19 @@ module Missive
 
       action
       assert_equal 200, status
-      # TODO: more assertions
+      @subscriber.reload
+      assert @subscriber.suppressed?
+      assert @subscriber.spam_complaint?
     end
 
-    def test_receive_manual_suppression_payload
+    test "receive manual suppression payload" do
       @payload = {
         "RecordType" => "SubscriptionChange",
         "MessageID" => "00000000-0000-0000-0000-000000000000",
         "ServerID" => 23,
         "MessageStream" => "outbound",
         "ChangedAt" => "2025-03-29T20:49:48Z",
-        "Recipient" => "john@example.com",
+        "Recipient" => @subscriber.email,
         "Origin" => "Recipient",
         "SuppressSending" => true,
         "SuppressionReason" => "ManualSuppression",
@@ -75,17 +80,20 @@ module Missive
 
       action
       assert_equal 200, status
-      # TODO: more assertions
+      @subscriber.reload
+      assert @subscriber.suppressed?
+      assert @subscriber.manual_suppression?
     end
 
-    def test_receive_resubscription_payload
+    test "receive resubscription payload" do
+      @subscriber = missive_subscribers(:jane)
       @payload = {
         "RecordType" => "SubscriptionChange",
         "MessageID" => "00000000-0000-0000-0000-000000000000",
         "ServerID" => 23,
         "MessageStream" => "outbound",
         "ChangedAt" => "2025-03-29T20:49:48Z",
-        "Recipient" => "john@example.com",
+        "Recipient" => @subscriber.email,
         "Origin" => "Recipient",
         "SuppressSending" => false,
         "SuppressionReason" => "ManualSuppression",
@@ -98,18 +106,27 @@ module Missive
 
       action
       assert_equal 200, status
-      # TODO: more assertions
+      @subscriber.reload
+      assert_not @subscriber.suppressed?
+      assert_nil @subscriber.suppression_reason
     end
 
-    def test_receive_wrong_payload
-      @payload = {"key" => "value"}
+    test "receive inexisting recipient" do
+      @payload = {"Recipient" => "fake@example.com"}
+
+      action
+      assert_equal 404, status
+    end
+
+    test "receive wrong payload" do
+      @payload = {"foo" => "bar", "Recipient" => @subscriber.email}
 
       assert_raise NoMatchingPatternError do
         action
       end
     end
 
-    def test_receive_wrong_secret
+    test "receive wrong secret" do
       @payload = {"key" => "value"}
       @headers = {"HTTP_X_POSTMARK_SECRET" => "WRONG"}
 

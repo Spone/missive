@@ -6,16 +6,13 @@ module Missive
     before_action :set_payload, only: :receive
     before_action :set_subscriber, only: :receive
 
+    # TODO: support for "MessageStream"
     def receive
       case @payload
-      in {RecordType: "SubscriptionChange", ChangedAt: changed_at, SuppressSending: true, SuppressionReason: "HardBounce"}
-        # @subscriber.update!(bounced_at: changed_at, disabled_at: Time.current)
-      in {RecordType: "SubscriptionChange", ChangedAt: changed_at, SuppressSending: true, SuppressionReason: "SpamComplaint"}
-        # @subscriber.update!(complained_at: changed_at, disabled_at: Time.current)
-      in {RecordType: "SubscriptionChange", ChangedAt: changed_at, SuppressSending: true, SuppressionReason: "ManualSuppression"}
-        # @subscriber.update!(unsubscribed_at: changed_at, disabled_at: Time.current)
+      in {RecordType: "SubscriptionChange", ChangedAt: changed_at, SuppressSending: true, SuppressionReason: suppression_reason}
+        @subscriber.update!(suppressed_at: changed_at, suppression_reason: suppression_reason.underscore)
       in {RecordType: "SubscriptionChange", ChangedAt: changed_at, SuppressSending: false}
-        # @subscriber.update!(disabled_at: nil, unsubscribed_at: nil, complained_at: nil, bounced_at: nil)
+        @subscriber.update!(suppressed_at: nil, suppression_reason: nil)
       end
 
       head :ok
@@ -34,7 +31,7 @@ module Missive
     end
 
     def set_subscriber
-      # @subscriber = Customer.find_by!(email: @payload[:Recipient])
+      @subscriber = Subscriber.find_by!(email: @payload[:Recipient])
     end
 
     def webhooks_secret
