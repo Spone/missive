@@ -4,6 +4,7 @@ class CreateMissiveSubscribers < ActiveRecord::Migration[8.0]
       t.string :email
       t.timestamp :suppressed_at
       t.integer :suppression_reason
+      t.references :user, foreign_key: true
 
       t.timestamps
     end
