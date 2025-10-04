@@ -6,4 +6,7 @@ john:
 jane:
   email: jane@example.com
   suppressed_at: 2025-10-02 02:00:05
-  suppression_reason: 1
+  suppression_reason: manual_suppression
+
+jenny:
+  email: jenny@example.com

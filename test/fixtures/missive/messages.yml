@@ -2,7 +2,7 @@
 
 first_newsletter:
   subject: Welcome to my newsletter!
-  dispatches_count: 0
+  dispatches_count: 2
   list: newsletter
   postmark_message_stream_id: bulk
   sent_at: 2025-09-14 21:00:00

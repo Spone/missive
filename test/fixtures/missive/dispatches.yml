@@ -1,0 +1,25 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+john_first_newsletter:
+  subscriber: john
+  message: first_newsletter
+  postmark_message_stream_id: bulk
+  postmark_message_id: 00000000-0000-0000-0000-000000000001
+  sent_at: nil
+  delivered_at: nil
+  opened_at: nil
+  clicked_at: nil
+  suppressed_at: nil
+  suppression_reason: nil
+
+jane_first_newsletter:
+  subscriber: jane
+  message: first_newsletter
+  postmark_message_stream_id: bulk
+  postmark_message_id: 00000000-0000-0000-0000-000000000002
+  sent_at: 2025-09-14 21:00:00
+  delivered_at: 2025-09-14 21:00:06
+  opened_at: 2025-10-01 02:00:01
+  clicked_at: 2025-10-01 02:00:03
+  suppressed_at: 2025-10-02 02:00:05
+  suppression_reason: manual_suppression
