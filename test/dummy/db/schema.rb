@@ -10,7 +10,25 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_10_04_193630) do
+ActiveRecord::Schema[8.0].define(version: 2025_10_04_201105) do
+  create_table "missive_dispatches", force: :cascade do |t|
+    t.integer "subscriber_id", null: false
+    t.integer "message_id", null: false
+    t.string "postmark_message_stream_id"
+    t.string "postmark_message_id"
+    t.datetime "sent_at"
+    t.datetime "delivered_at"
+    t.datetime "opened_at"
+    t.datetime "clicked_at"
+    t.datetime "suppressed_at"
+    t.integer "suppression_reason"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["message_id"], name: "index_missive_dispatches_on_message_id"
+    t.index ["subscriber_id", "message_id"], name: "index_missive_dispatches_on_subscriber_id_and_message_id", unique: true
+    t.index ["subscriber_id"], name: "index_missive_dispatches_on_subscriber_id"
+  end
+
   create_table "missive_lists", force: :cascade do |t|
     t.string "name", null: false
     t.integer "subscriptions_count", default: 0
@@ -48,6 +66,8 @@ ActiveRecord::Schema[8.0].define(version: 2025_10_04_193630) do
     t.datetime "updated_at", null: false
   end
 
+  add_foreign_key "missive_dispatches", "missive_messages", column: "message_id"
+  add_foreign_key "missive_dispatches", "missive_subscribers", column: "subscriber_id"
   add_foreign_key "missive_messages", "missive_lists", column: "list_id"
   add_foreign_key "missive_subscribers", "users"
 end

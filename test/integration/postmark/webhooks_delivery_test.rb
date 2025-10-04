@@ -7,7 +7,7 @@ module Missive
     setup do
       @routes = Engine.routes
       @headers = {"HTTP_X_POSTMARK_SECRET" => Rails.application.credentials.postmark.webhooks_secret}
-      @dispatch = missive_dispatches(:one)
+      @dispatch = missive_dispatches(:john_first_newsletter)
     end
 
     test "receive delivery payload" do
@@ -23,7 +23,7 @@ module Missive
           "example" => "value",
           "example_2" => "value"
         },
-        "MessageStream" => "outbound"
+        "MessageStream" => "bulk"
       }
 
       action
