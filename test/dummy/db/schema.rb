@@ -25,6 +25,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_10_04_201105) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["message_id"], name: "index_missive_dispatches_on_message_id"
+    t.index ["subscriber_id", "message_id"], name: "index_missive_dispatches_on_subscriber_id_and_message_id", unique: true
     t.index ["subscriber_id"], name: "index_missive_dispatches_on_subscriber_id"
   end
 

@@ -9,5 +9,8 @@ module Missive
     time_for_a_boolean :delivered
     time_for_a_boolean :opened
     time_for_a_boolean :clicked
+
+    validates :message, uniqueness: {scope: :subscriber,
+                                     message: "should be dispatched once per subscriber"}
   end
 end

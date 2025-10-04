@@ -2,6 +2,12 @@ require "test_helper"
 
 module Missive
   class DispatchTest < ActiveSupport::TestCase
+    test "must be unique for subscriber and message" do
+      assert_raises(ActiveRecord::RecordInvalid) do
+        Dispatch.create!(subscriber: missive_subscribers(:john), message: missive_messages(:first_newsletter))
+      end
+    end
+
     test "can be sent" do
       freeze_time
       dispatch = missive_dispatches(:john_first_newsletter)

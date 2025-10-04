@@ -12,6 +12,8 @@ class CreateMissiveDispatches < ActiveRecord::Migration[8.0]
       t.timestamp :suppressed_at
       t.integer :suppression_reason
 
+      t.index [:subscriber_id, :message_id], unique: true
+
       t.timestamps
     end
   end
