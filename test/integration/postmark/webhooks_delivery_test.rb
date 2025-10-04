@@ -7,14 +7,14 @@ module Missive
     setup do
       @routes = Engine.routes
       @headers = { 'HTTP_X_POSTMARK_SECRET' => Rails.application.credentials.postmark.webhooks_secret }
-      @message = missive_messages(:one)
+      @dispatch = missive_dispatches(:one)
     end
 
     test 'receive delivery payload' do
       @payload = {
         'RecordType' => 'Delivery',
-        'MessageID' => @message.message_id,
-        'Recipient' => @message.subscriber.email,
+        'MessageID' => @dispatch.postmark_message_id,
+        'Recipient' => @dispatch.subscriber.email,
         'DeliveredAt' => '2025-09-14T16:30:00.0000000Z',
         'Details' => 'Test delivery webhook details',
         'Tag' => 'welcome-email',
@@ -28,12 +28,12 @@ module Missive
 
       action
       assert_equal 200, status
-      @message.reload
-      assert @message.delivered?
-      assert_equal Time.utc(2025, 9, 14, 16, 30), @message.delivered_at
+      @dispatch.reload
+      assert @dispatch.delivered?
+      assert_equal Time.utc(2025, 9, 14, 16, 30), @dispatch.delivered_at
     end
 
-    test 'receive nonexistent message' do
+    test 'receive nonexistent dispatch' do
       @payload = {
         'RecordType' => 'Delivery',
         'MessageID' => 'WRONG'
@@ -43,10 +43,10 @@ module Missive
       assert_equal 404, status
     end
 
-    test 'receive recipient not matching message' do
+    test 'receive recipient not matching dispatch' do
       @payload = {
         'RecordType' => 'Delivery',
-        'MessageID' => @message.message_id,
+        'MessageID' => @dispatch.postmark_message_id,
         'Recipient' => 'wrong@example.com'
       }
 

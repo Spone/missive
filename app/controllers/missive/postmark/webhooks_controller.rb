@@ -10,10 +10,10 @@ module Missive
     def receive
       case @payload
       in { RecordType: 'Delivery', DeliveredAt: delivered_at }
-        set_message
+        set_dispatch
         set_subscriber
-        check_message_recipient!
-        @message.update!(delivered_at:)
+        check_dispatch_recipient!
+        @dispatch.update!(delivered_at:)
       in { RecordType: 'SubscriptionChange', ChangedAt: suppressed_at, SuppressSending: true, SuppressionReason: suppression_reason }
         set_subscriber
         @subscriber.update!(suppressed_at:, suppression_reason: suppression_reason.underscore)
@@ -37,19 +37,19 @@ module Missive
       @payload = JSON.parse(request.body.read).with_indifferent_access
     end
 
-    def set_message
-      @message = Message.find_by(postmark_message_id: @payload[:MessageID])
+    def set_dispatch
+      @dispatch = Dispatch.find_by(postmark_message_id: @payload[:MessageID])
     end
 
     def set_subscriber
       @subscriber = Subscriber.find_by!(email: @payload[:Recipient])
     end
 
-    def check_message_recipient!
-      return unless @message.subscriber != @subscriber
+    def check_dispatch_recipient!
+      return unless @dispatch.subscriber != @subscriber
 
       raise RecipientNotMatching,
-            "Message subscriber #{@message.subscriber.email} does not match payload recipient #{@payload[:Recipient]}"
+            "Dispatch subscriber #{@dispatch.subscriber.email} does not match payload recipient #{@payload[:Recipient]}"
     end
 
     def webhooks_secret
