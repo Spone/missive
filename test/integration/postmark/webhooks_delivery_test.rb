@@ -1,4 +1,4 @@
-require 'test_helper'
+require "test_helper"
 
 module Missive
   class Postmark::WebhooksDeliveryTest < ActionDispatch::IntegrationTest
@@ -6,24 +6,24 @@ module Missive
 
     setup do
       @routes = Engine.routes
-      @headers = { 'HTTP_X_POSTMARK_SECRET' => Rails.application.credentials.postmark.webhooks_secret }
+      @headers = {"HTTP_X_POSTMARK_SECRET" => Rails.application.credentials.postmark.webhooks_secret}
       @dispatch = missive_dispatches(:one)
     end
 
-    test 'receive delivery payload' do
+    test "receive delivery payload" do
       @payload = {
-        'RecordType' => 'Delivery',
-        'MessageID' => @dispatch.postmark_message_id,
-        'Recipient' => @dispatch.subscriber.email,
-        'DeliveredAt' => '2025-09-14T16:30:00.0000000Z',
-        'Details' => 'Test delivery webhook details',
-        'Tag' => 'welcome-email',
-        'ServerID' => 23,
-        'Metadata' => {
-          'example' => 'value',
-          'example_2' => 'value'
+        "RecordType" => "Delivery",
+        "MessageID" => @dispatch.postmark_message_id,
+        "Recipient" => @dispatch.subscriber.email,
+        "DeliveredAt" => "2025-09-14T16:30:00.0000000Z",
+        "Details" => "Test delivery webhook details",
+        "Tag" => "welcome-email",
+        "ServerID" => 23,
+        "Metadata" => {
+          "example" => "value",
+          "example_2" => "value"
         },
-        'MessageStream' => 'outbound'
+        "MessageStream" => "outbound"
       }
 
       action
@@ -33,21 +33,21 @@ module Missive
       assert_equal Time.utc(2025, 9, 14, 16, 30), @dispatch.delivered_at
     end
 
-    test 'receive nonexistent dispatch' do
+    test "receive nonexistent dispatch" do
       @payload = {
-        'RecordType' => 'Delivery',
-        'MessageID' => 'WRONG'
+        "RecordType" => "Delivery",
+        "MessageID" => "WRONG"
       }
 
       action
       assert_equal 404, status
     end
 
-    test 'receive recipient not matching dispatch' do
+    test "receive recipient not matching dispatch" do
       @payload = {
-        'RecordType' => 'Delivery',
-        'MessageID' => @dispatch.postmark_message_id,
-        'Recipient' => 'wrong@example.com'
+        "RecordType" => "Delivery",
+        "MessageID" => @dispatch.postmark_message_id,
+        "Recipient" => "wrong@example.com"
       }
 
       action
@@ -57,7 +57,7 @@ module Missive
     private
 
     def action
-      post postmark_webhooks_path, headers: @headers, env: { RAW_POST_DATA: @payload.to_json }
+      post postmark_webhooks_path, headers: @headers, env: {RAW_POST_DATA: @payload.to_json}
     end
   end
 end

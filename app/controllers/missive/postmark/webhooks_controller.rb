@@ -9,15 +9,15 @@ module Missive
 
     def receive
       case @payload
-      in { RecordType: 'Delivery', DeliveredAt: delivered_at }
+      in {RecordType: "Delivery", DeliveredAt: delivered_at}
         set_dispatch
         set_subscriber
         check_dispatch_recipient!
         @dispatch.update!(delivered_at:)
-      in { RecordType: 'SubscriptionChange', ChangedAt: suppressed_at, SuppressSending: true, SuppressionReason: suppression_reason }
+      in {RecordType: "SubscriptionChange", ChangedAt: suppressed_at, SuppressSending: true, SuppressionReason: suppression_reason}
         set_subscriber
         @subscriber.update!(suppressed_at:, suppression_reason: suppression_reason.underscore)
-      in { RecordType: 'SubscriptionChange', SuppressSending: false }
+      in {RecordType: "SubscriptionChange", SuppressSending: false}
         set_subscriber
         @subscriber.update!(suppressed_at: nil, suppression_reason: nil)
       end
@@ -28,7 +28,7 @@ module Missive
     private
 
     def verify_webhook
-      secret_header = request.headers['HTTP_X_POSTMARK_SECRET']
+      secret_header = request.headers["HTTP_X_POSTMARK_SECRET"]
 
       head :unauthorized if secret_header != webhooks_secret
     end
@@ -49,7 +49,7 @@ module Missive
       return unless @dispatch.subscriber != @subscriber
 
       raise RecipientNotMatching,
-            "Dispatch subscriber #{@dispatch.subscriber.email} does not match payload recipient #{@payload[:Recipient]}"
+        "Dispatch subscriber #{@dispatch.subscriber.email} does not match payload recipient #{@payload[:Recipient]}"
     end
 
     def webhooks_secret

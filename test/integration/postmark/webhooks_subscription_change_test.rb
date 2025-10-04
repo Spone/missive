@@ -1,4 +1,4 @@
-require 'test_helper'
+require "test_helper"
 
 module Missive
   class Postmark::WebhooksSubscriptionChangeTest < ActionDispatch::IntegrationTest
@@ -6,25 +6,25 @@ module Missive
 
     setup do
       @routes = Engine.routes
-      @headers = { 'HTTP_X_POSTMARK_SECRET' => Rails.application.credentials.postmark.webhooks_secret }
+      @headers = {"HTTP_X_POSTMARK_SECRET" => Rails.application.credentials.postmark.webhooks_secret}
       @subscriber = missive_subscribers(:john)
     end
 
-    test 'receive bounce payload' do
+    test "receive bounce payload" do
       @payload = {
-        'RecordType' => 'SubscriptionChange',
-        'MessageID' => '00000000-0000-0000-0000-000000000000',
-        'ServerID' => 23,
-        'MessageStream' => 'outbound',
-        'ChangedAt' => '2025-03-29T20:49:48Z',
-        'Recipient' => @subscriber.email,
-        'Origin' => 'Recipient',
-        'SuppressSending' => true,
-        'SuppressionReason' => 'HardBounce',
-        'Tag' => 'welcome-email',
-        'Metadata' => {
-          'example' => 'value',
-          'example_2' => 'value'
+        "RecordType" => "SubscriptionChange",
+        "MessageID" => "00000000-0000-0000-0000-000000000000",
+        "ServerID" => 23,
+        "MessageStream" => "outbound",
+        "ChangedAt" => "2025-03-29T20:49:48Z",
+        "Recipient" => @subscriber.email,
+        "Origin" => "Recipient",
+        "SuppressSending" => true,
+        "SuppressionReason" => "HardBounce",
+        "Tag" => "welcome-email",
+        "Metadata" => {
+          "example" => "value",
+          "example_2" => "value"
         }
       }
 
@@ -35,21 +35,21 @@ module Missive
       assert @subscriber.hard_bounce?
     end
 
-    test 'receive spam complaint payload' do
+    test "receive spam complaint payload" do
       @payload = {
-        'RecordType' => 'SubscriptionChange',
-        'MessageID' => '00000000-0000-0000-0000-000000000000',
-        'ServerID' => 23,
-        'MessageStream' => 'outbound',
-        'ChangedAt' => '2025-03-29T20:49:48Z',
-        'Recipient' => @subscriber.email,
-        'Origin' => 'Recipient',
-        'SuppressSending' => true,
-        'SuppressionReason' => 'SpamComplaint',
-        'Tag' => 'welcome-email',
-        'Metadata' => {
-          'example' => 'value',
-          'example_2' => 'value'
+        "RecordType" => "SubscriptionChange",
+        "MessageID" => "00000000-0000-0000-0000-000000000000",
+        "ServerID" => 23,
+        "MessageStream" => "outbound",
+        "ChangedAt" => "2025-03-29T20:49:48Z",
+        "Recipient" => @subscriber.email,
+        "Origin" => "Recipient",
+        "SuppressSending" => true,
+        "SuppressionReason" => "SpamComplaint",
+        "Tag" => "welcome-email",
+        "Metadata" => {
+          "example" => "value",
+          "example_2" => "value"
         }
       }
 
@@ -60,21 +60,21 @@ module Missive
       assert @subscriber.spam_complaint?
     end
 
-    test 'receive manual suppression payload' do
+    test "receive manual suppression payload" do
       @payload = {
-        'RecordType' => 'SubscriptionChange',
-        'MessageID' => '00000000-0000-0000-0000-000000000000',
-        'ServerID' => 23,
-        'MessageStream' => 'outbound',
-        'ChangedAt' => '2025-03-29T20:49:48Z',
-        'Recipient' => @subscriber.email,
-        'Origin' => 'Recipient',
-        'SuppressSending' => true,
-        'SuppressionReason' => 'ManualSuppression',
-        'Tag' => 'welcome-email',
-        'Metadata' => {
-          'example' => 'value',
-          'example_2' => 'value'
+        "RecordType" => "SubscriptionChange",
+        "MessageID" => "00000000-0000-0000-0000-000000000000",
+        "ServerID" => 23,
+        "MessageStream" => "outbound",
+        "ChangedAt" => "2025-03-29T20:49:48Z",
+        "Recipient" => @subscriber.email,
+        "Origin" => "Recipient",
+        "SuppressSending" => true,
+        "SuppressionReason" => "ManualSuppression",
+        "Tag" => "welcome-email",
+        "Metadata" => {
+          "example" => "value",
+          "example_2" => "value"
         }
       }
 
@@ -85,22 +85,22 @@ module Missive
       assert @subscriber.manual_suppression?
     end
 
-    test 'receive resubscription payload' do
+    test "receive resubscription payload" do
       @subscriber = missive_subscribers(:jane)
       @payload = {
-        'RecordType' => 'SubscriptionChange',
-        'MessageID' => '00000000-0000-0000-0000-000000000000',
-        'ServerID' => 23,
-        'MessageStream' => 'outbound',
-        'ChangedAt' => '2025-03-29T20:49:48Z',
-        'Recipient' => @subscriber.email,
-        'Origin' => 'Recipient',
-        'SuppressSending' => false,
-        'SuppressionReason' => 'ManualSuppression',
-        'Tag' => 'welcome-email',
-        'Metadata' => {
-          'example' => 'value',
-          'example_2' => 'value'
+        "RecordType" => "SubscriptionChange",
+        "MessageID" => "00000000-0000-0000-0000-000000000000",
+        "ServerID" => 23,
+        "MessageStream" => "outbound",
+        "ChangedAt" => "2025-03-29T20:49:48Z",
+        "Recipient" => @subscriber.email,
+        "Origin" => "Recipient",
+        "SuppressSending" => false,
+        "SuppressionReason" => "ManualSuppression",
+        "Tag" => "welcome-email",
+        "Metadata" => {
+          "example" => "value",
+          "example_2" => "value"
         }
       }
 
@@ -114,7 +114,7 @@ module Missive
     private
 
     def action
-      post postmark_webhooks_path, headers: @headers, env: { RAW_POST_DATA: @payload.to_json }
+      post postmark_webhooks_path, headers: @headers, env: {RAW_POST_DATA: @payload.to_json}
     end
   end
 end

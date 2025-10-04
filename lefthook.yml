@@ -1,0 +1,13 @@
+# EXAMPLE USAGE:
+#
+#   Refer for explanation to following link:
+#   https://github.com/evilmartians/lefthook/blob/master/docs/configuration.md
+
+pre-commit:
+  parallel: true
+  commands:
+    standard:
+      tags: ruby style
+      glob: "**/*.rb"
+      run: bundle exec rake standard:fix {staged_files}
+      stage_fixed: true
