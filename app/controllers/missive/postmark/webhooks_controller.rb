@@ -7,6 +7,10 @@ module Missive
     before_action :verify_webhook
     before_action :set_payload, only: :receive
 
+    rescue_from NoMatchingPatternError do |e|
+      render json: {error: e.message}, status: :unprocessable_entity
+    end
+
     def receive
       case @payload
       in {RecordType: "Delivery", DeliveredAt: delivered_at}

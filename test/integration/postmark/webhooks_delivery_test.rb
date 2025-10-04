@@ -33,6 +33,15 @@ module Missive
       assert_equal Time.utc(2025, 9, 14, 16, 30), @dispatch.delivered_at
     end
 
+    test "receive nonexistent recipient" do
+      @payload = {
+        "RecordType" => "Delivery", "Recipient" => "fake@example.com"
+      }
+
+      action
+      assert_equal 404, status
+    end
+
     test "receive nonexistent dispatch" do
       @payload = {
         "RecordType" => "Delivery",

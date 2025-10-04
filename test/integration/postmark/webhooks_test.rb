@@ -10,19 +10,11 @@ module Missive
       @subscriber = missive_subscribers(:john)
     end
 
-    test "receive nonexistent recipient" do
-      @payload = {"Recipient" => "fake@example.com"}
-
-      action
-      assert_equal 404, status
-    end
-
     test "receive wrong payload" do
       @payload = {"foo" => "bar", "Recipient" => @subscriber.email}
 
-      assert_raise NoMatchingPatternError do
-        action
-      end
+      action
+      assert_equal 422, status
     end
 
     test "receive wrong secret" do
