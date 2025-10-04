@@ -110,9 +110,11 @@ module Missive
       assert_not @subscriber.suppressed?
       assert_nil @subscriber.suppression_reason
     end
+
     test "receive nonexistent recipient" do
       @payload = {
-        "RecordType" => "SubscriptionChange", "Recipient" => "fake@example.com",
+        "RecordType" => "SubscriptionChange",
+        "Recipient" => "fake@example.com",
         "SuppressSending" => true,
         "SuppressionReason" => "ManualSuppression"
       }

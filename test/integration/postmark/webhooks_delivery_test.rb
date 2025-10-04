@@ -35,7 +35,8 @@ module Missive
 
     test "receive nonexistent recipient" do
       @payload = {
-        "RecordType" => "Delivery", "Recipient" => "fake@example.com"
+        "RecordType" => "Delivery",
+        "Recipient" => "fake@example.com"
       }
 
       action
