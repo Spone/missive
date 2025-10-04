@@ -13,6 +13,21 @@ module Missive
       assert message.list.is_a?(Missive::List)
     end
 
+    test "has many dispatches" do
+      message = missive_messages(:first_newsletter)
+      assert_equal 2, message.dispatches.count
+      assert message.dispatches.first.is_a?(Missive::Dispatch)
+    end
+
+    test "has a dispatches counter cache" do
+      message = missive_messages(:first_newsletter)
+      assert_equal 2, message.dispatches_count
+      message.dispatches.create!(subscriber: missive_subscribers(:jenny))
+      assert_equal 3, message.reload.dispatches_count
+      message.dispatches.last.destroy!
+      assert_equal 2, message.reload.dispatches_count
+    end
+
     test "is invalid without a list" do
       message = missive_messages(:first_newsletter)
       message.list = nil
