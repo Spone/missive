@@ -4,7 +4,7 @@ class CreateMissiveLists < ActiveRecord::Migration[8.0]
       t.string :name, null: false
       t.integer :subscriptions_count, default: 0
       t.integer :messages_count, default: 0
-      t.timestamp :last_messaged_at
+      t.timestamp :last_message_sent_at
       t.string :postmark_message_stream_id
 
       t.timestamps
