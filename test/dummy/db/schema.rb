@@ -10,7 +10,17 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_10_02_004815) do
+ActiveRecord::Schema[8.0].define(version: 2025_10_04_191513) do
+  create_table "missive_lists", force: :cascade do |t|
+    t.string "name", null: false
+    t.integer "subscriptions_count", default: 0
+    t.integer "messages_count", default: 0
+    t.datetime "last_messaged_at"
+    t.string "postmark_message_stream_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
   create_table "missive_subscribers", force: :cascade do |t|
     t.string "email", null: false
     t.datetime "suppressed_at"
