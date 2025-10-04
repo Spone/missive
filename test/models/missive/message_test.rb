@@ -18,5 +18,15 @@ module Missive
       message.list = nil
       assert_not message.valid?
     end
+
+    test "can be sent" do
+      freeze_time
+      message = missive_messages(:second_newsletter)
+      assert_nil message.sent_at
+      assert_not message.sent?
+      message.sent!
+      assert_equal Time.zone.now, message.sent_at
+      assert message.sent?
+    end
   end
 end
