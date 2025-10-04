@@ -10,15 +10,26 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_10_04_191513) do
+ActiveRecord::Schema[8.0].define(version: 2025_10_04_193630) do
   create_table "missive_lists", force: :cascade do |t|
     t.string "name", null: false
     t.integer "subscriptions_count", default: 0
     t.integer "messages_count", default: 0
-    t.datetime "last_messaged_at"
+    t.datetime "last_message_sent_at"
     t.string "postmark_message_stream_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+  end
+
+  create_table "missive_messages", force: :cascade do |t|
+    t.string "subject", null: false
+    t.integer "dispatches_count", default: 0
+    t.integer "list_id", null: false
+    t.string "postmark_message_stream_id"
+    t.datetime "sent_at"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["list_id"], name: "index_missive_messages_on_list_id"
   end
 
   create_table "missive_subscribers", force: :cascade do |t|
@@ -37,5 +48,6 @@ ActiveRecord::Schema[8.0].define(version: 2025_10_04_191513) do
     t.datetime "updated_at", null: false
   end
 
+  add_foreign_key "missive_messages", "missive_lists", column: "list_id"
   add_foreign_key "missive_subscribers", "users"
 end
