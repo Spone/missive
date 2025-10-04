@@ -18,9 +18,9 @@ module Missive
       list = missive_lists(:newsletter)
       assert_equal 2, list.messages_count
       list.messages.create!(subject: "Hello, world!")
-      assert_equal 3, list.messages_count
+      assert_equal 3, list.reload.messages_count
       list.messages.last.destroy!
-      assert_equal 2, list.messages_count
+      assert_equal 2, list.reload.messages_count
     end
   end
 end
