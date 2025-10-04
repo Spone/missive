@@ -1,0 +1,15 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+newsletter:
+  name: My Newsletter
+  subscriptions_count: 0
+  messages_count: 0
+  last_messaged_at: <%= 2.days.ago %>
+  postmark_message_stream_id: bulk
+
+pristine:
+  name: My new list
+  subscriptions_count: 0
+  messages_count: 0
+  last_messaged_at: nil
+  postmark_message_stream_id: bulk
