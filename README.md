@@ -28,27 +28,13 @@ Missive uses the same configuration as postmark-rails. Please follow the [postma
 
 > Work in progress
 
-## Development
-
-After checking out the repo, run `bin/setup` to install dependencies. Then, run `rake test` to run the tests. You can also run `bin/console` for an interactive prompt that will allow you to experiment.
-
-To install this gem onto your local machine, run:
-
-```bash
-bundle exec rake install
-```
-
 ## Testing
 
 Run the test suite with:
 
 ```bash
-rake test
+bin/rails test
 ```
-
-## Support
-
-For issues, questions, or contributions, please visit the [GitHub repository](https://github.com/Spone/missive).
 
 ## Contributing
 
@@ -60,7 +46,7 @@ Bug reports and pull requests are welcome on GitHub at https://github.com/Spone/
 - Run `bin/setup` to install dependencies
 - Create your feature branch (`git checkout -b my-new-feature`)
 - Make your changes
-- Run the tests `rake test`
+- Run the tests `bin/rails test`
 - Commit your change, push the branch and create a pull request
 
 ### Release
