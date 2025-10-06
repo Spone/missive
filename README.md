@@ -11,7 +11,7 @@ A lightweight Rails toolkit for building newsletter features. Missive provides t
 
 ## Requirements
 
-- Ruby 2.7 or higher
+- Rails 8.0 or higher
 - A Postmark account with API credentials
 
 ## Installation
