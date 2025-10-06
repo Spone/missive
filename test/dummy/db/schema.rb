@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_10_04_201105) do
+ActiveRecord::Schema[8.0].define(version: 2025_10_06_214059) do
   create_table "missive_dispatches", force: :cascade do |t|
     t.integer "subscriber_id", null: false
     t.integer "message_id", null: false
@@ -60,6 +60,18 @@ ActiveRecord::Schema[8.0].define(version: 2025_10_04_201105) do
     t.index ["user_id"], name: "index_missive_subscribers_on_user_id"
   end
 
+  create_table "missive_subscriptions", force: :cascade do |t|
+    t.integer "subscriber_id", null: false
+    t.integer "list_id", null: false
+    t.datetime "suppressed_at"
+    t.integer "suppression_reason"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["list_id"], name: "index_missive_subscriptions_on_list_id"
+    t.index ["subscriber_id", "list_id"], name: "index_missive_subscriptions_on_subscriber_id_and_list_id", unique: true
+    t.index ["subscriber_id"], name: "index_missive_subscriptions_on_subscriber_id"
+  end
+
   create_table "users", force: :cascade do |t|
     t.string "email", null: false
     t.datetime "created_at", null: false
@@ -70,4 +82,6 @@ ActiveRecord::Schema[8.0].define(version: 2025_10_04_201105) do
   add_foreign_key "missive_dispatches", "missive_subscribers", column: "subscriber_id"
   add_foreign_key "missive_messages", "missive_lists", column: "list_id"
   add_foreign_key "missive_subscribers", "users"
+  add_foreign_key "missive_subscriptions", "missive_lists", column: "list_id"
+  add_foreign_key "missive_subscriptions", "missive_subscribers", column: "subscriber_id"
 end

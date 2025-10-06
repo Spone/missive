@@ -39,5 +39,22 @@ module Missive
       assert subscriber.suppressed?
       assert subscriber.manual_suppression?
     end
+
+    test "#suppressed!" do
+      freeze_time
+      subscriber = missive_subscribers(:john)
+      assert_nil subscriber.suppressed_at
+      assert_not subscriber.suppressed?
+      subscriber.suppressed!
+      assert_equal Time.zone.now, subscriber.suppressed_at
+      assert subscriber.suppressed?
+    end
+
+    test "is invalid if suppressed without a reason" do
+      subscriber = missive_subscribers(:john)
+      subscriber.suppressed!
+      assert_not subscriber.valid?
+      assert_equal ["can't be blank"], subscriber.errors[:suppression_reason]
+    end
   end
 end
