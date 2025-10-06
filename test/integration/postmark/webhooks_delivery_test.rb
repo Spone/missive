@@ -36,32 +36,39 @@ module Missive
     test "receive nonexistent recipient" do
       @payload = {
         "RecordType" => "Delivery",
-        "Recipient" => "fake@example.com"
+        "MessageID" => @dispatch.postmark_message_id,
+        "Recipient" => "fake@example.com",
+        "DeliveredAt" => "2025-09-14T16:30:00.0000000Z"
       }
 
       action
       assert_equal 404, status
+      assert_match "Missive::Subscriber not found", response.body
     end
 
     test "receive nonexistent dispatch" do
       @payload = {
         "RecordType" => "Delivery",
-        "MessageID" => "WRONG"
+        "MessageID" => "WRONG",
+        "DeliveredAt" => "2025-09-14T16:30:00.0000000Z"
       }
 
       action
       assert_equal 404, status
+      assert_match "Missive::Dispatch not found", response.body
     end
 
     test "receive recipient not matching dispatch" do
       @payload = {
         "RecordType" => "Delivery",
         "MessageID" => @dispatch.postmark_message_id,
-        "Recipient" => "wrong@example.com"
+        "Recipient" => "jane@example.com",
+        "DeliveredAt" => "2025-09-14T16:30:00.0000000Z"
       }
 
       action
       assert_equal 400, status
+      assert_match "Dispatch subscriber #{@dispatch.subscriber.email} does not match payload recipient jane@example.com", response.body
     end
 
     private

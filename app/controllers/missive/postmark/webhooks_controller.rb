@@ -7,9 +7,9 @@ module Missive
     before_action :verify_webhook
     before_action :set_payload, only: :receive
 
-    rescue_from NoMatchingPatternError do |e|
-      render json: {error: e.message}, status: :unprocessable_entity
-    end
+    rescue_from RecipientNotMatching, with: :handle_bad_request
+    rescue_from ActiveRecord::RecordNotFound, with: :handle_not_found
+    rescue_from NoMatchingPatternError, with: :handle_no_matching_pattern
 
     def receive
       case @payload
@@ -34,7 +34,7 @@ module Missive
     def verify_webhook
       secret_header = request.headers["HTTP_X_POSTMARK_SECRET"]
 
-      head :unauthorized if secret_header != webhooks_secret
+      render plain: "Cannot verify webhook", status: :unauthorized if secret_header != webhooks_secret
     end
 
     def set_payload
@@ -42,7 +42,7 @@ module Missive
     end
 
     def set_dispatch
-      @dispatch = Dispatch.find_by(postmark_message_id: @payload[:MessageID])
+      @dispatch = Dispatch.find_by!(postmark_message_id: @payload[:MessageID])
     end
 
     def set_subscriber
@@ -58,6 +58,18 @@ module Missive
 
     def webhooks_secret
       Rails.application.credentials.postmark.webhooks_secret
+    end
+
+    def handle_bad_request(e)
+      render plain: e.message, status: :bad_request
+    end
+
+    def handle_not_found(e)
+      render plain: "#{e.model} not found", status: :not_found
+    end
+
+    def handle_no_matching_pattern
+      render plain: "Webhook payload not supported", status: :unprocessable_entity
     end
   end
 end

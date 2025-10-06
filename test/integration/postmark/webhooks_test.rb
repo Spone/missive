@@ -15,6 +15,7 @@ module Missive
 
       action
       assert_equal 422, status
+      assert_match "Webhook payload not supported", response.body
     end
 
     test "receive wrong secret" do
@@ -23,6 +24,7 @@ module Missive
 
       action
       assert_equal 401, status
+      assert_match "Cannot verify webhook", response.body
     end
 
     private

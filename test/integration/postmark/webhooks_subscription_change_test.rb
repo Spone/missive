@@ -115,12 +115,13 @@ module Missive
       @payload = {
         "RecordType" => "SubscriptionChange",
         "Recipient" => "fake@example.com",
-        "SuppressSending" => true,
+        "SuppressSending" => false,
         "SuppressionReason" => "ManualSuppression"
       }
 
       action
       assert_equal 404, status
+      assert_match "Missive::Subscriber not found", response.body
     end
 
     private
