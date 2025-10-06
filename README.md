@@ -1,38 +1,74 @@
 # Missive
 
-TODO: Delete this and the text below, and describe your gem
+A lightweight Rails toolkit for building newsletter features. Missive provides the primitives for managing newsletters and subscribers, with [Postmark](https://postmarkapp.com/) handling delivery.
 
-Welcome to your new gem! In this directory, you'll find the files you need to be able to package up your Ruby library into a gem. Put your Ruby code in the file `lib/missive`. To experiment with that code, run `bin/console` for an interactive prompt.
+## Features
+
+- **Newsletter Management**: Create and organize newsletters within your Rails application
+- **Postmark Integration**: Leverage Postmark's reliable email delivery service
+- **Rails Native**: Designed to work seamlessly with Rails conventions and ActionMailer
+- **Subscriber Management**: Handle your newsletter subscriber lists
+
+## Requirements
+
+- Ruby 2.7 or higher
+- A Postmark account with API credentials
 
 ## Installation
 
-TODO: Replace `UPDATE_WITH_YOUR_GEM_NAME_IMMEDIATELY_AFTER_RELEASE_TO_RUBYGEMS_ORG` with your gem name right after releasing it to RubyGems.org. Please do not do it earlier due to security reasons. Alternatively, replace this section with instructions to install your gem from git if you don't plan to release to RubyGems.org.
-
-Install the gem and add to the application's Gemfile by executing:
-
 ```bash
-bundle add UPDATE_WITH_YOUR_GEM_NAME_IMMEDIATELY_AFTER_RELEASE_TO_RUBYGEMS_ORG
+bundle add missive
 ```
 
-If bundler is not being used to manage dependencies, install the gem by executing:
+## Configuration
 
-```bash
-gem install UPDATE_WITH_YOUR_GEM_NAME_IMMEDIATELY_AFTER_RELEASE_TO_RUBYGEMS_ORG
-```
+Missive uses the same configuration as postmark-rails. Please follow the [postmark-rails configuration instructions](https://github.com/ActiveCampaign/postmark-rails?tab=readme-ov-file#installation) to set up your Postmark API credentials.
 
 ## Usage
 
-TODO: Write usage instructions here
+> Work in progress
 
 ## Development
 
 After checking out the repo, run `bin/setup` to install dependencies. Then, run `rake test` to run the tests. You can also run `bin/console` for an interactive prompt that will allow you to experiment.
 
-To install this gem onto your local machine, run `bundle exec rake install`. To release a new version, update the version number in `version.rb`, and then run `bundle exec rake release`, which will create a git tag for the version, push git commits and the created tag, and push the `.gem` file to [rubygems.org](https://rubygems.org).
+To install this gem onto your local machine, run:
+
+```bash
+bundle exec rake install
+```
+
+## Testing
+
+Run the test suite with:
+
+```bash
+rake test
+```
+
+## Support
+
+For issues, questions, or contributions, please visit the [GitHub repository](https://github.com/Spone/missive).
 
 ## Contributing
 
-Bug reports and pull requests are welcome on GitHub at https://github.com/[USERNAME]/missive. This project is intended to be a safe, welcoming space for collaboration, and contributors are expected to adhere to the [code of conduct](https://github.com/[USERNAME]/missive/blob/main/CODE_OF_CONDUCT.md).
+Bug reports and pull requests are welcome on GitHub at https://github.com/Spone/missive. This project is intended to be a safe, welcoming space for collaboration, and contributors are expected to adhere to the [code of conduct](https://github.com/Spone/missive/blob/main/CODE_OF_CONDUCT.md).
+
+### Get started
+
+- Fork the repository
+- Run `bin/setup` to install dependencies
+- Create your feature branch (`git checkout -b my-new-feature`)
+- Make your changes
+- Run the tests `rake test`
+- Commit your change, push the branch and create a pull request
+
+### Release
+
+- Update the version number in `version.rb`
+- Run `bundle exec rake release`, which will create a git tag for the version
+- Push git commits and the created tag
+- Push the `.gem` file to [rubygems.org](https://rubygems.org)
 
 ## License
 
@@ -40,4 +76,4 @@ The gem is available as open source under the terms of the [MIT License](https:/
 
 ## Code of Conduct
 
-Everyone interacting in the Missive project's codebases, issue trackers, chat rooms and mailing lists is expected to follow the [code of conduct](https://github.com/[USERNAME]/missive/blob/main/CODE_OF_CONDUCT.md).
+Everyone interacting in the Missive project's codebases, issue trackers, chat rooms and mailing lists is expected to follow the [code of conduct](https://github.com/Spone/missive/blob/main/CODE_OF_CONDUCT.md).
