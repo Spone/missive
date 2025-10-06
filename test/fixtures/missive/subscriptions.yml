@@ -3,3 +3,9 @@
 john_newsletter:
   subscriber: john
   list: newsletter
+
+jane_newsletter:
+  subscriber: jane
+  list: newsletter
+  suppressed_at: 2025-10-02 02:00:05
+  suppression_reason: manual_suppression

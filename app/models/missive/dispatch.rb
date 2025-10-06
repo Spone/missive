@@ -4,6 +4,8 @@ module Missive
 
     belongs_to :subscriber
     belongs_to :message, counter_cache: :dispatches_count
+    has_one :list, through: :message
+    has_one :subscription, ->(dispatch) { where(list: dispatch.list) }, through: :subscriber, source: :subscriptions
 
     time_for_a_boolean :sent
     time_for_a_boolean :delivered

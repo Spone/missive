@@ -50,6 +50,7 @@ module Missive
       @payload = {
         "RecordType" => "Delivery",
         "MessageID" => "WRONG",
+        "Recipient" => "jane@example.com",
         "DeliveredAt" => "2025-09-14T16:30:00.0000000Z"
       }
 
