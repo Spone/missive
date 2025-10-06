@@ -8,12 +8,14 @@ module Missive
       @routes = Engine.routes
       @headers = {"HTTP_X_POSTMARK_SECRET" => Rails.application.credentials.postmark.webhooks_secret}
       @subscriber = missive_subscribers(:john)
+      @subscription = missive_subscriptions(:john_newsletter)
+      @dispatch = missive_dispatches(:john_first_newsletter)
     end
 
     test "receive bounce payload" do
       @payload = {
         "RecordType" => "SubscriptionChange",
-        "MessageID" => "00000000-0000-0000-0000-000000000000",
+        "MessageID" => @dispatch.postmark_message_id,
         "ServerID" => 23,
         "MessageStream" => "bulk",
         "ChangedAt" => "2025-03-29T20:49:48Z",
@@ -33,12 +35,16 @@ module Missive
       @subscriber.reload
       assert @subscriber.suppressed?
       assert @subscriber.hard_bounce?
+      assert @subscription.suppressed?
+      assert @subscription.hard_bounce?
+      assert @dispatch.suppressed?
+      assert @dispatch.hard_bounce?
     end
 
     test "receive spam complaint payload" do
       @payload = {
         "RecordType" => "SubscriptionChange",
-        "MessageID" => "00000000-0000-0000-0000-000000000000",
+        "MessageID" => @dispatch.postmark_message_id,
         "ServerID" => 23,
         "MessageStream" => "bulk",
         "ChangedAt" => "2025-03-29T20:49:48Z",
@@ -63,7 +69,7 @@ module Missive
     test "receive manual suppression payload" do
       @payload = {
         "RecordType" => "SubscriptionChange",
-        "MessageID" => "00000000-0000-0000-0000-000000000000",
+        "MessageID" => @dispatch.postmark_message_id,
         "ServerID" => 23,
         "MessageStream" => "bulk",
         "ChangedAt" => "2025-03-29T20:49:48Z",
@@ -89,7 +95,7 @@ module Missive
       @subscriber = missive_subscribers(:jane)
       @payload = {
         "RecordType" => "SubscriptionChange",
-        "MessageID" => "00000000-0000-0000-0000-000000000000",
+        "MessageID" => @dispatch.postmark_message_id,
         "ServerID" => 23,
         "MessageStream" => "bulk",
         "ChangedAt" => "2025-03-29T20:49:48Z",

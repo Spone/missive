@@ -16,6 +16,16 @@ module Missive
       assert_nil Subscriber.new.suppression_reason
     end
 
+    test ".suppressed scope" do
+      assert_not_includes Subscriber.suppressed, missive_subscribers(:john)
+      assert_includes Subscriber.suppressed, missive_subscribers(:jane)
+    end
+
+    test ".not_suppressed scope" do
+      assert_includes Subscriber.not_suppressed, missive_subscribers(:john)
+      assert_not_includes Subscriber.not_suppressed, missive_subscribers(:jane)
+    end
+
     test "subscriber can hard bounce" do
       subscriber = missive_subscribers(:john)
       subscriber.suppressed_at = Time.zone.now
