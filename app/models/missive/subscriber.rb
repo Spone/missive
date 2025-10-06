@@ -4,8 +4,8 @@ module Missive
 
     belongs_to :user, optional: true
     has_many :dispatches, dependent: :destroy
-    # has_many :subscriptions, dependent: :destroy
-    # has_many :lists, through: :subscriptions
+    has_many :subscriptions, dependent: :destroy
+    has_many :lists, through: :subscriptions
 
     validates :email, presence: true
   end

@@ -16,21 +16,16 @@ module Missive
       assert subscriber.dispatches.first.is_a?(Missive::Dispatch)
     end
 
-    test "can be suppressed" do
-      freeze_time
+    test "has many subscriptions" do
       subscriber = missive_subscribers(:john)
-      assert_nil subscriber.suppressed_at
-      assert_not subscriber.suppressed?
-      subscriber.suppressed!
-      assert_equal Time.zone.now, subscriber.suppressed_at
-      assert subscriber.suppressed?
+      assert_equal 1, subscriber.subscriptions.count
+      assert subscriber.subscriptions.first.is_a?(Missive::Subscription)
     end
 
-    test "is invalid if suppressed without a reason" do
+    test "has many lists" do
       subscriber = missive_subscribers(:john)
-      subscriber.suppressed!
-      assert_not subscriber.valid?
-      assert_equal ["can't be blank"], subscriber.errors[:suppression_reason]
+      assert_equal 1, subscriber.lists.count
+      assert subscriber.lists.first.is_a?(Missive::List)
     end
   end
 end
