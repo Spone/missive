@@ -8,6 +8,16 @@ module Missive
       end
     end
 
+    test "has one list" do
+      dispatch = missive_dispatches(:john_first_newsletter)
+      assert_equal missive_lists(:newsletter), dispatch.list
+    end
+
+    test "has one subscription" do
+      dispatch = missive_dispatches(:john_first_newsletter)
+      assert_equal missive_subscriptions(:john_newsletter), dispatch.subscription
+    end
+
     test "can be sent" do
       freeze_time
       dispatch = missive_dispatches(:john_first_newsletter)

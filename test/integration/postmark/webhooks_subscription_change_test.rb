@@ -32,13 +32,11 @@ module Missive
 
       action
       assert_equal 200, status
-      @subscriber.reload
-      assert @subscriber.suppressed?
-      assert @subscriber.hard_bounce?
-      assert @subscription.suppressed?
-      assert @subscription.hard_bounce?
-      assert @dispatch.suppressed?
-      assert @dispatch.hard_bounce?
+      [@subscriber, @subscription, @dispatch].each do |record|
+        record.reload
+        assert record.suppressed?
+        assert record.hard_bounce?
+      end
     end
 
     test "receive spam complaint payload" do
@@ -61,9 +59,11 @@ module Missive
 
       action
       assert_equal 200, status
-      @subscriber.reload
-      assert @subscriber.suppressed?
-      assert @subscriber.spam_complaint?
+      [@subscriber, @subscription, @dispatch].each do |record|
+        record.reload
+        assert record.suppressed?
+        assert record.spam_complaint?
+      end
     end
 
     test "receive manual suppression payload" do
@@ -86,22 +86,24 @@ module Missive
 
       action
       assert_equal 200, status
-      @subscriber.reload
-      assert @subscriber.suppressed?
-      assert @subscriber.manual_suppression?
+      [@subscriber, @subscription, @dispatch].each do |record|
+        record.reload
+        assert record.suppressed?
+        assert record.manual_suppression?
+      end
     end
 
-    test "receive resubscription payload" do
-      @subscriber = missive_subscribers(:jane)
+    test "receive manual suppression from admin payload" do
       @payload = {
         "RecordType" => "SubscriptionChange",
-        "MessageID" => @dispatch.postmark_message_id,
+        # MessageID is null for Manual Suppressions with Origin value of Customer or Admin and Reactivations.
+        "MessageID" => nil,
         "ServerID" => 23,
         "MessageStream" => "bulk",
         "ChangedAt" => "2025-03-29T20:49:48Z",
         "Recipient" => @subscriber.email,
-        "Origin" => "Recipient",
-        "SuppressSending" => false,
+        "Origin" => "Admin",
+        "SuppressSending" => true,
         "SuppressionReason" => "ManualSuppression",
         "Tag" => "welcome-email",
         "Metadata" => {
@@ -113,8 +115,38 @@ module Missive
       action
       assert_equal 200, status
       @subscriber.reload
-      assert_not @subscriber.suppressed?
-      assert_nil @subscriber.suppression_reason
+      assert @subscriber.suppressed?
+      assert @subscriber.manual_suppression?
+      assert_not @subscription.suppressed?
+      assert_not @dispatch.suppressed?
+    end
+
+    test "receive resubscription payload" do
+      @subscriber = missive_subscribers(:jane)
+      @subscription = missive_subscriptions(:jane_newsletter)
+      @dispatch = missive_dispatches(:jane_first_newsletter)
+      @payload = {
+        "RecordType" => "SubscriptionChange",
+        "MessageID" => @dispatch.postmark_message_id,
+        "ServerID" => 23,
+        "MessageStream" => "bulk",
+        "ChangedAt" => "2025-03-29T20:49:48Z",
+        "Recipient" => @subscriber.email,
+        "Origin" => "Recipient",
+        "SuppressSending" => false,
+        # The SuppressionReason and Tag fields are null, while the Metadata field is an empty object when SuppressSending = false (reactivation).
+        "SuppressionReason" => nil,
+        "Tag" => nil,
+        "Metadata" => {}
+      }
+
+      action
+      assert_equal 200, status
+      [@subscriber, @subscription, @dispatch].each do |record|
+        record.reload
+        assert_not record.suppressed?
+        assert_nil record.suppression_reason
+      end
     end
 
     test "receive nonexistent recipient" do

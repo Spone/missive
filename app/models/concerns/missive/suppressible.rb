@@ -11,6 +11,16 @@ module Missive
       scope :not_suppressed, -> { where(suppressed_at: nil) }
 
       validates :suppression_reason, presence: true, if: :suppressed?
+
+      def suppress!(reason:)
+        self.suppression_reason = reason
+        suppressed!
+        save!
+      end
+
+      def unsuppress!
+        update!(suppressed_at: nil, suppression_reason: nil)
+      end
     end
   end
 end

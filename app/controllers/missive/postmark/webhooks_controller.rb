@@ -14,16 +14,19 @@ module Missive
     def receive
       case @payload
       in {RecordType: "Delivery", DeliveredAt: delivered_at}
-        set_dispatch
-        set_subscriber
-        check_dispatch_recipient!
+        set_subscriber! && set_dispatch! && check_dispatch_recipient!
         @dispatch.update!(delivered_at:)
       in {RecordType: "SubscriptionChange", ChangedAt: suppressed_at, SuppressSending: true, SuppressionReason: suppression_reason}
-        set_subscriber
-        @subscriber.update!(suppressed_at:, suppression_reason: suppression_reason.underscore)
+        set_subscriber! && set_dispatch && set_subscription
+        reason = suppression_reason.underscore
+        @subscriber.suppress!(reason:)
+        @dispatch&.suppress!(reason:)
+        @subscription&.suppress!(reason:)
       in {RecordType: "SubscriptionChange", SuppressSending: false}
-        set_subscriber
-        @subscriber.update!(suppressed_at: nil, suppression_reason: nil)
+        set_subscriber! && set_dispatch && set_subscription
+        @subscriber.unsuppress!
+        @dispatch&.unsuppress!
+        @subscription&.unsuppress!
       end
 
       head :ok
@@ -42,18 +45,29 @@ module Missive
     end
 
     def set_dispatch
-      @dispatch = Dispatch.find_by!(postmark_message_id: @payload[:MessageID])
+      @dispatch = Dispatch.includes(:subscriber, :list).find_by(postmark_message_id: @payload["MessageID"])
     end
 
-    def set_subscriber
-      @subscriber = Subscriber.find_by!(email: @payload[:Recipient])
+    def set_dispatch!
+      @dispatch = Dispatch.includes(:subscriber, :list).find_by!(postmark_message_id: @payload["MessageID"])
+    end
+
+    def set_subscriber!
+      @subscriber = Subscriber.find_by!(email: @payload["Recipient"])
+    end
+
+    def set_subscription
+      return if @dispatch.nil?
+
+      list = @dispatch.list
+      @subscription = Subscription.find_by(list:, subscriber: @subscriber)
     end
 
     def check_dispatch_recipient!
       return unless @dispatch.subscriber != @subscriber
 
       raise RecipientNotMatching,
-        "Dispatch subscriber #{@dispatch.subscriber.email} does not match payload recipient #{@payload[:Recipient]}"
+        "Dispatch subscriber #{@dispatch.subscriber.email} does not match payload recipient #{@payload["Recipient"]}"
     end
 
     def webhooks_secret
