@@ -2,17 +2,50 @@
 
 A lightweight Rails toolkit for building newsletter features. Missive provides the primitives for managing newsletters and subscribers, with [Postmark](https://postmarkapp.com/) handling delivery.
 
-## Features
+## Overview
+
+### Features
 
 - **Newsletter Management**: Create and organize newsletters within your Rails application
 - **Postmark Integration**: Leverage Postmark's reliable email delivery service
 - **Rails Native**: Designed to work seamlessly with Rails conventions and ActionMailer
 - **Subscriber Management**: Handle your newsletter subscriber lists
 
+### Scope
+
+#### Goals
+
+- Rely on Postmark as much as possible, integrate with webhooks, send through Postmark API (not SMTP).
+- Provide a way to compose messages that include content from the host app models.
+
+#### Non-goals
+
+- Integrate with other sending services.
+- Send transactional emails or email sequences: Missive focuses on newsletters.
+- Provide ready-made subscription forms: subscription management is the responsibility of the host app.
+- Multi-tenancy: Missive is designed for a single Rails app and domain.
+
+## Concepts
+
+### Models
+
+- `Sender` is an identity used to send messages, optionally associated with a `User` from the host app. It has a corresponding [Sender Signature](https://postmarkapp.com/developer/api/signatures-api) in Postmark.
+- `Subscriber` is a person who have opted in to receiving emails or have been added manually, optionally associated with a `User` from the host app.
+- `Subscription` is the relation between a subscriber and a list.
+- `List` is a list of subscribers. It uses a specific [Message Stream](https://postmarkapp.com/developer/api/message-streams-api) to send messages through Postmark.
+- `Message` is an email sent to subscribers of a given list.
+- `Dispatch` is the relation between a subscriber and a message (ie. when a `Message` is sent, it's dispatched to all subscribers). It's called [Email](https://postmarkapp.com/developer/api/email-api) in Postmark.
+
 ## Requirements
 
 - Rails 8.0 or higher
 - A Postmark account with API credentials
+
+### Dependencies
+
+- Official [postmark](https://github.com/activecampaign/postmark-gem) gem
+- [time_for_a_boolean](https://github.com/calebhearth/time_for_a_boolean) to back boolean concepts (`sent`, `delivered`, `open`, ...) with timestamps
+- [rails-pattern_matching](https://github.com/kddnewton/rails-pattern_matching) to use pattern matching when processing incoming webhooks
 
 ## Installation
 
