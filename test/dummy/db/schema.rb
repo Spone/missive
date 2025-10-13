@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_10_06_214059) do
+ActiveRecord::Schema[8.0].define(version: 2025_10_13_205354) do
   create_table "missive_dispatches", force: :cascade do |t|
     t.integer "subscriber_id", null: false
     t.integer "message_id", null: false
@@ -24,7 +24,9 @@ ActiveRecord::Schema[8.0].define(version: 2025_10_06_214059) do
     t.integer "suppression_reason"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "sender_id", null: false
     t.index ["message_id"], name: "index_missive_dispatches_on_message_id"
+    t.index ["sender_id"], name: "index_missive_dispatches_on_sender_id"
     t.index ["subscriber_id", "message_id"], name: "index_missive_dispatches_on_subscriber_id_and_message_id", unique: true
     t.index ["subscriber_id"], name: "index_missive_dispatches_on_subscriber_id"
   end
@@ -37,6 +39,8 @@ ActiveRecord::Schema[8.0].define(version: 2025_10_06_214059) do
     t.string "postmark_message_stream_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "sender_id", null: false
+    t.index ["sender_id"], name: "index_missive_lists_on_sender_id"
   end
 
   create_table "missive_messages", force: :cascade do |t|
@@ -47,7 +51,20 @@ ActiveRecord::Schema[8.0].define(version: 2025_10_06_214059) do
     t.datetime "sent_at"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "sender_id", null: false
     t.index ["list_id"], name: "index_missive_messages_on_list_id"
+    t.index ["sender_id"], name: "index_missive_messages_on_sender_id"
+  end
+
+  create_table "missive_senders", force: :cascade do |t|
+    t.string "email", null: false
+    t.string "name"
+    t.string "reply_to_email"
+    t.integer "postmark_sender_signature_id"
+    t.integer "user_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["user_id"], name: "index_missive_senders_on_user_id"
   end
 
   create_table "missive_subscribers", force: :cascade do |t|
@@ -79,8 +96,11 @@ ActiveRecord::Schema[8.0].define(version: 2025_10_06_214059) do
   end
 
   add_foreign_key "missive_dispatches", "missive_messages", column: "message_id"
+  add_foreign_key "missive_dispatches", "missive_senders", column: "sender_id"
   add_foreign_key "missive_dispatches", "missive_subscribers", column: "subscriber_id"
+  add_foreign_key "missive_lists", "missive_senders", column: "sender_id"
   add_foreign_key "missive_messages", "missive_lists", column: "list_id"
+  add_foreign_key "missive_messages", "missive_senders", column: "sender_id"
   add_foreign_key "missive_subscribers", "users"
   add_foreign_key "missive_subscriptions", "missive_lists", column: "list_id"
   add_foreign_key "missive_subscriptions", "missive_subscribers", column: "subscriber_id"

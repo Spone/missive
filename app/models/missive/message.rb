@@ -1,5 +1,6 @@
 module Missive
   class Message < ApplicationRecord
+    belongs_to :sender
     belongs_to :list, counter_cache: :messages_count
     has_many :dispatches, dependent: :destroy
 

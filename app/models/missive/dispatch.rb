@@ -2,6 +2,7 @@ module Missive
   class Dispatch < ApplicationRecord
     include Suppressible
 
+    belongs_to :sender
     belongs_to :subscriber
     belongs_to :message, counter_cache: :dispatches_count
     has_one :list, through: :message

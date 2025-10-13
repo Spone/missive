@@ -8,6 +8,21 @@ module Missive
       end
     end
 
+    test "belongs to a sender" do
+      dispatch = missive_dispatches(:john_first_newsletter)
+      assert_equal missive_senders(:david), dispatch.sender
+    end
+
+    test "belongs to a subscriber" do
+      dispatch = missive_dispatches(:john_first_newsletter)
+      assert_equal missive_subscribers(:john), dispatch.subscriber
+    end
+
+    test "belongs to a message" do
+      dispatch = missive_dispatches(:john_first_newsletter)
+      assert_equal missive_messages(:first_newsletter), dispatch.message
+    end
+
     test "has one list" do
       dispatch = missive_dispatches(:john_first_newsletter)
       assert_equal missive_lists(:newsletter), dispatch.list

@@ -1,0 +1,11 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+david:
+  email: david@example.com
+  name: David
+  reply_to_email: contact@example.com
+  postmark_sender_signature_id: 123456
+
+pristine:
+  email: pristine@example.com
+  name: Pristine
