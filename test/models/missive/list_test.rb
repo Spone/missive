@@ -8,6 +8,11 @@ module Missive
       assert_not list.valid?
     end
 
+    test "belongs to a sender" do
+      dispatch = missive_lists(:newsletter)
+      assert_equal missive_senders(:david), dispatch.sender
+    end
+
     test "has many messages" do
       list = missive_lists(:newsletter)
       assert_equal 2, list.messages.count
@@ -17,7 +22,7 @@ module Missive
     test "has a messages counter cache" do
       list = missive_lists(:newsletter)
       assert_equal 2, list.messages_count
-      list.messages.create!(subject: "Hello, world!")
+      list.messages.create!(sender: list.sender, subject: "Hello, world!")
       assert_equal 3, list.reload.messages_count
       list.messages.last.destroy!
       assert_equal 2, list.reload.messages_count

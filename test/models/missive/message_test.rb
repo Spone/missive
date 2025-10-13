@@ -8,6 +8,11 @@ module Missive
       assert_not list.valid?
     end
 
+    test "belongs to a sender" do
+      message = missive_messages(:first_newsletter)
+      assert message.sender.is_a?(Missive::Sender)
+    end
+
     test "belongs to a list" do
       message = missive_messages(:first_newsletter)
       assert message.list.is_a?(Missive::List)
@@ -22,7 +27,7 @@ module Missive
     test "has a dispatches counter cache" do
       message = missive_messages(:first_newsletter)
       assert_equal 2, message.dispatches_count
-      message.dispatches.create!(subscriber: missive_subscribers(:jenny))
+      message.dispatches.create!(sender: message.sender, subscriber: missive_subscribers(:jenny))
       assert_equal 3, message.reload.dispatches_count
       message.dispatches.last.destroy!
       assert_equal 2, message.reload.dispatches_count
@@ -31,6 +36,12 @@ module Missive
     test "is invalid without a list" do
       message = missive_messages(:first_newsletter)
       message.list = nil
+      assert_not message.valid?
+    end
+
+    test "is invalid without a sender" do
+      message = missive_messages(:first_newsletter)
+      message.sender = nil
       assert_not message.valid?
     end
 
