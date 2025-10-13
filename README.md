@@ -47,17 +47,19 @@ A lightweight Rails toolkit for building newsletter features. Missive provides t
 - [time_for_a_boolean](https://github.com/calebhearth/time_for_a_boolean) to back boolean concepts (`sent`, `delivered`, `open`, ...) with timestamps
 - [rails-pattern_matching](https://github.com/kddnewton/rails-pattern_matching) to use pattern matching when processing incoming webhooks
 
-## Installation
+## Usage
+
+### Setup
 
 ```bash
 bundle add missive
 ```
 
-## Configuration
+### Configuration
 
-Missive uses the same configuration as postmark-rails. Please follow the [postmark-rails configuration instructions](https://github.com/ActiveCampaign/postmark-rails?tab=readme-ov-file#installation) to set up your Postmark API credentials.
+Missive uses the same configuration as `postmark-rails`. Please follow the [`postmark-rails` configuration instructions](https://github.com/ActiveCampaign/postmark-rails?tab=readme-ov-file#installation) to set up your Postmark API credentials.
 
-## Usage
+### Quick start
 
 > Work in progress
 
