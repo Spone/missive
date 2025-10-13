@@ -61,7 +61,102 @@ Missive uses the same configuration as `postmark-rails`. Please follow the [`pos
 
 ### Quick start
 
-> Work in progress
+> [!WARNING]
+> **Everything below is currently being developed and is not yet ready for use.**
+
+#### Connect the host app `User` model (optional)
+
+The host app `User` can be associated to a `Missive::Subscriber` and/or a `Missive::Sender`, using the `Missive::User` concern.
+
+```rb
+class User < ApplicationRecord
+  include Missive::User
+end
+```
+
+This is equivalent to:
+
+```rb
+class User < ApplicationRecord
+  has_one :sender, class_name: "Missive::Sender", dependent: :nullify
+  has_many :sent_dispatches, class_name: "Missive::Dispatch", through: :sender
+  has_many :sent_lists, class_name: "Missive::List", through: :sender
+  has_many :sent_messages, class_name: "Missive::Message", through: :sender
+
+  has_one :subscriber, class_name: "Missive::Subscriber", dependent: :destroy
+  has_many :dispatches, class_name: "Missive::Dispatch", through: :subscriber
+  has_many :subscribed_lists, class_name: "Missive::List", through: :subscriber
+  has_many :subscriptions, class_name: "Missive::Subscription", through: :subscriber
+end
+```
+
+#### Manage subscriptions
+
+```rb
+user = User.first
+list = Missive::List.first
+
+# Make sure the User has an associated Missive::Subscriber
+user.init_subscriber
+# This is equivalent to:
+user.subscriber = Missive::Subscriber.new(email: user.email)
+
+# List the subscriptions
+user.subscriptions # returns a `Missive::Subscription` collection
+
+# List the subscribed lists
+user.subscribed_lists # returns a `Missive::List` collection
+
+# Subscribe to an existing Missive::List
+user.create_subscription!(list:)
+
+# Unsubscribe from the list
+user.subscriptions.where(list:).suppress!(reason: :manual_suppression)
+```
+
+#### Manage senders
+
+```rb
+user = User.where(admin: true).first
+list = Missive::List.first
+
+# Make sure the User has an associated Missive::Sender
+user.init_sender(name: user.full_name)
+# This is equivalent to:
+user.sender = Missive::Sender.new(email: user.email, name: user.full_name)
+
+# Make them the default sender for a list
+user.sent_lists << list
+```
+
+#### Manage lists
+
+```rb
+# Create a new list
+list = Missive::List.create!(name: "My newsletter")
+
+# Choose a specific Message Stream to send messages for this list
+list.update!(postmark_message_stream_id: "bulk")
+
+# Get available lists
+Missive::List.all
+
+# Get list stats
+list.subscriptions_count # how many people subscribe or unsubscribe to this list?
+list.messages_count # how many messages have been created in this list?
+```
+
+#### Manage messages
+
+```rb
+# Create a new message in a list
+list.create_message!(subject: "Hello world!")
+
+# TODO: add message content
+
+# Send the message to the list
+message.send!
+```
 
 ## Testing
 
