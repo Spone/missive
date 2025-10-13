@@ -13,6 +13,9 @@ module Missive
 
     def receive
       case @payload
+      in {RecordType: "Open", ReceivedAt: opened_at}
+        set_subscriber! && set_dispatch! && check_dispatch_recipient!
+        @dispatch.update!(opened_at:)
       in {RecordType: "Delivery", DeliveredAt: delivered_at}
         set_subscriber! && set_dispatch! && check_dispatch_recipient!
         @dispatch.update!(delivered_at:)
