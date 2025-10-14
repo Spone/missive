@@ -4,7 +4,7 @@ module Missive
   class SenderTest < ActiveSupport::TestCase
     test "belongs to a user" do
       email = "test@example.com"
-      user = User.create!(email:)
+      user = ::User.create!(email:)
       sender = Sender.create!(email:, user:)
       assert_equal user, sender.user
       assert_equal user.sender, sender

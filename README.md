@@ -74,19 +74,38 @@ class User < ApplicationRecord
 end
 ```
 
+The concerns can also be included separately, which is useful if `User` needs to be implemented as a `Sender` or `Subscriber` only.
+
+```rb
+class User < ApplicationRecord
+  include Missive::UserAsSender
+  include Missive::UserAsSubscriber
+end
+```
+
 This is equivalent to:
 
 ```rb
 class User < ApplicationRecord
+  # Missive::UserAsSender
   has_one :sender, class_name: "Missive::Sender", dependent: :nullify
   has_many :sent_dispatches, class_name: "Missive::Dispatch", through: :sender
   has_many :sent_lists, class_name: "Missive::List", through: :sender
   has_many :sent_messages, class_name: "Missive::Message", through: :sender
 
+  def init_sender(attributes = {});
+    # ...
+  end
+
+  # Missive::UserAsSubscriber
   has_one :subscriber, class_name: "Missive::Subscriber", dependent: :destroy
   has_many :dispatches, class_name: "Missive::Dispatch", through: :subscriber
   has_many :subscribed_lists, class_name: "Missive::List", through: :subscriber
   has_many :subscriptions, class_name: "Missive::Subscription", through: :subscriber
+
+  def init_subscriber(attributes = {})
+    # ...
+  end
 end
 ```
 
