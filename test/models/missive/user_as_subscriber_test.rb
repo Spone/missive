@@ -44,19 +44,6 @@ module Missive
       assert_equal [dispatch], user.dispatches
     end
 
-    test "has no subscribed_lists by default" do
-      user = ::User.new
-      assert_empty user.subscribed_lists
-    end
-
-    test "can have subscribed_lists" do
-      user = ::User.create!(email: "jessica@example.com")
-      subscriber = user.init_subscriber
-      list = missive_lists(:newsletter)
-      subscriber.lists << list
-      assert_equal [list], user.subscribed_lists
-    end
-
     test "has no subscriptions by default" do
       user = ::User.new
       assert_empty user.subscriptions
@@ -68,6 +55,33 @@ module Missive
       subscription = missive_subscriptions(:john_newsletter)
       subscriber.subscriptions << subscription
       assert_equal [subscription], user.subscriptions
+    end
+
+    test "has no subscribed_lists by default" do
+      user = ::User.new
+      assert_empty user.subscribed_lists
+    end
+
+    test "can have subscribed_lists" do
+      user = ::User.create!(email: "jessica@example.com")
+      user.init_subscriber
+      list = missive_lists(:newsletter)
+      user.subscriber.subscriptions.create!(list:)
+      assert_equal [list], user.subscribed_lists
+    end
+
+    test "has no unsubscribed_lists by default" do
+      user = ::User.new
+      assert_empty user.unsubscribed_lists
+    end
+
+    test "can have unsubscribed_lists" do
+      user = ::User.create!(email: "jessica@example.com")
+      user.init_subscriber
+      list = missive_lists(:newsletter)
+      user.subscriber.subscriptions.create!(list:)
+      user.subscriptions.find_by(list:).suppress!(reason: :manual_suppression)
+      assert_equal [list], user.unsubscribed_lists
     end
   end
 end

@@ -61,9 +61,6 @@ Missive uses the same configuration as `postmark-rails`. Please follow the [`pos
 
 ### Quick start
 
-> [!WARNING]
-> **Everything below is currently being developed and is not yet ready for use.**
-
 #### Connect the host app `User` model (optional)
 
 The host app `User` can be associated to a `Missive::Subscriber` and/or a `Missive::Sender`, using the `Missive::User` concern.
@@ -100,8 +97,9 @@ class User < ApplicationRecord
   # Missive::UserAsSubscriber
   has_one :subscriber # ...
   has_many :dispatches # ...
-  has_many :subscribed_lists # ...
   has_many :subscriptions # ...
+  has_many :subscribed_lists # ...
+  has_many :unsubscribed_lists # ...
 
   def init_subscriber(attributes = {})
     # ...
@@ -115,22 +113,23 @@ end
 user = User.first
 list = Missive::List.first
 
-# Make sure the User has an associated Missive::Subscriber
+# Make sure the User has an associated Missive::Subscriber:
+# - if one exists with the same email, associate it
+# - else create a new subscriber with the same email
 user.init_subscriber
-# This is equivalent to:
-user.subscriber = Missive::Subscriber.new(email: user.email)
 
 # List the subscriptions
 user.subscriptions # returns a `Missive::Subscription` collection
 
-# List the subscribed lists
+# List the (un)subscribed lists
 user.subscribed_lists # returns a `Missive::List` collection
+user.unsubscribed_lists # returns a `Missive::List` collection
 
 # Subscribe to an existing Missive::List
-user.create_subscription!(list:)
+user.subscriber.subscriptions.create!(list:)
 
 # Unsubscribe from the list
-user.subscriptions.where(list:).suppress!(reason: :manual_suppression)
+user.subscriptions.find_by(list:).suppress!(reason: :manual_suppression)
 ```
 
 #### Manage senders
@@ -139,10 +138,11 @@ user.subscriptions.where(list:).suppress!(reason: :manual_suppression)
 user = User.where(admin: true).first
 list = Missive::List.first
 
-# Make sure the User has an associated Missive::Sender
+# Make sure the User has an associated Missive::Sender:
+# - if one exists with the same email, associate it
+# - else create a new sender with the same email
+# then assign them the provided name
 user.init_sender(name: user.full_name)
-# This is equivalent to:
-user.sender = Missive::Sender.new(email: user.email, name: user.full_name)
 
 # Make them the default sender for a list
 user.sent_lists << list
@@ -164,6 +164,9 @@ Missive::List.all
 list.subscriptions_count # how many people subscribe or unsubscribe to this list?
 list.messages_count # how many messages have been created in this list?
 ```
+
+> [!WARNING]
+> **Everything below is currently being developed and is not yet ready for use.**
 
 #### Manage messages
 
