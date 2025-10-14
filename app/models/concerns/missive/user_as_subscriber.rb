@@ -5,7 +5,7 @@ module Missive
     included do
       has_one :subscriber, class_name: "Missive::Subscriber", dependent: :destroy
       has_many :dispatches, class_name: "Missive::Dispatch", through: :subscriber
-      has_many :subscribed_lists, class_name: "Missive::List", through: :subscriber
+      has_many :subscribed_lists, class_name: "Missive::List", through: :subscriber, source: :lists
       has_many :subscriptions, class_name: "Missive::Subscription", through: :subscriber
 
       def init_subscriber(attributes = {})
