@@ -12,6 +12,7 @@ module Missive
         self.subscriber = Missive::Subscriber.find_or_initialize_by(email:)
         subscriber.assign_attributes(attributes)
         subscriber.save!
+        subscriber
       end
     end
   end

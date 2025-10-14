@@ -12,6 +12,7 @@ module Missive
         self.sender = Missive::Sender.find_or_initialize_by(email:)
         sender.assign_attributes(attributes)
         sender.save!
+        sender
       end
     end
   end
