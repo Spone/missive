@@ -22,8 +22,8 @@ module Missive
       #     }
       #   ]
       # )
-      def deliver_in_bulk(message_hash = {})
-        data = serialize(::Postmark::MessageHelper.to_postmark(message_hash))
+      def deliver_in_bulk(message, recipients = [])
+        data = serialize(message.to_postmark_hash.merge(messages: recipients))
 
         with_retries do
           format_response http_client.post("email/bulk", data)

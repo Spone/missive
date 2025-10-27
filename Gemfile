@@ -12,7 +12,7 @@ gem "puma"
 gem "sqlite3"
 
 gem "minitest", "~> 5.16"
-gem "mocha", "~> 2.7"
+gem "webmock", "~> 3.26"
 
 gem "standard", "~> 1.3"
 

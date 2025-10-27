@@ -14,7 +14,7 @@ module Missive
 
         def response
           {
-            Id: "f24af63c-533d-4b7a-ad65-4a7b3202d3a7",
+            Id: id,
             SubmittedAt: "2024-07-22T15:39:49.3723691Z",
             TotalMessages: 2,
             PercentageCompleted: 2,
@@ -23,15 +23,17 @@ module Missive
           }
         end
 
+        setup do
+          stub_request(:get, "https://api.postmarkapp.com/email/bulk/#{id}")
+            .to_return_json(body: response, status: 200)
+        end
+
         test "requests the bulk status from the expected enpoint" do
-          http_client.expects(:get).with("email/bulk/#{id}").returns(response)
-          subject
+          assert subject
         end
 
         test "converts response to ruby format" do
-          http_client.expects(:get).with("email/bulk/#{id}").returns(response)
-          result = subject
-          assert_includes result.keys, :id
+          assert_equal subject[:id], id
         end
 
         private
@@ -43,7 +45,7 @@ module Missive
         delegate :http_client, to: :api_client
 
         def api_token
-          "provided-api-token"
+          "POSTMARK_API_TEST"
         end
       end
     end
