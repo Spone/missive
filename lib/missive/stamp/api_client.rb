@@ -29,6 +29,10 @@ module Missive
           format_response http_client.post("email/bulk", data)
         end
       end
+
+      def get_bulk_status(id)
+        format_response http_client.get("email/bulk/#{id}")
+      end
     end
   end
 end
