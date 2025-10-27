@@ -180,6 +180,68 @@ list.create_message!(subject: "Hello world!")
 message.send!
 ```
 
+### Sending with Postmark Bulk API
+
+Missive leverages the [Bulk Email API](https://postmarkapp.com/developer/api/bulk-email) endpoints.
+
+> [!WARNING]
+> This endpoint is available to early access customers only. You need to request access. [Learn more](https://postmarkapp.com/support/article/1311-the-early-access-program-for-the-new-bulk-api)
+
+The official [postmark gem](https://github.com/ActiveCampaign/postmark-gem) does not support these endpoints yet, so Missive ships with `Stamp`, a thin layer over Postmark's official library.
+
+#### Sending a message in bulk
+
+You can pass a Hash that matches the body expected by the API.
+
+```rb
+Missive::Stamp::ApiClient.deliver_in_bulk(
+  from: "sender@example.com",
+  subject: "Hello {{name}}",
+  html_body: "<p>Hello {{name}}</p>",
+  text_body: "Hello {{name}}",
+  messages: [
+    {
+      to: "jane.doe@example.com",
+      template_model: {name: "Jane"}
+    },
+    {
+      to: "john.doe@example.com",
+      template_model: {name: "John"}
+    }
+  ]
+)
+```
+
+You can also pass a `Mail` instance and an Array of recipients.
+
+```rb
+mail = Mail.new do
+  from "sender@example.com"
+  subject "Hello {{name}}"
+  body: "Hello {{name}}"
+end
+
+Missive::Stamp::ApiClient.deliver_message_in_bulk(
+  mail,
+  [
+    {
+      to: "jane.doe@example.com",
+      template_model: {name: "Jane"}
+    },
+    {
+      to: "john.doe@example.com",
+      template_model: {name: "John"}
+    }
+  ]
+)
+```
+
+#### Getting the status of a bulk API request
+
+```rb
+Missive::Stamp::ApiClient.get_bulk_status("f24af63c-533d-4b7a-ad65-4a7b3202d3a7")
+```
+
 ## License
 
 The gem is available as open source under the terms of the [MIT License](https://opensource.org/licenses/MIT).
