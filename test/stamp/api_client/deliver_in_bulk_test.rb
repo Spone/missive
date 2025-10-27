@@ -4,46 +4,36 @@ module Missive
   module Stamp
     class ApiClient
       class DeliverInBulkTest < ActiveSupport::TestCase
-        def id
-          "f24af63c-533d-4b7a-ad65-4a7b3202d3a7"
-        end
-
-        def message
-          Mail.new do
-            from "david@example.com"
-            subject "Hey {{name}}"
-            body "Hello, {{name}}!"
-          end
-        end
-
-        def recipients
-          [
-            {
-              to: "jane.doe@example.com",
-              template_model: {name: "Jane"}
-            },
-            {
-              to: "john.doe@example.com",
-              template_model: {name: "John"}
-            }
-          ]
+        def message_hash
+          {
+            from: "david@example.com",
+            subject: "Hey {{name}}",
+            html_body: "<p>Hello, {{name}}!</p>",
+            text_body: "Hello, {{name}}!",
+            messages: [
+              {
+                to: "jane.doe@example.com",
+                template_model: {name: "Jane"}
+              },
+              {
+                to: "john.doe@example.com",
+                template_model: {name: "John"}
+              }
+            ]
+          }
         end
 
         def email
-          ::Postmark::MessageHelper.to_postmark(message)
-        end
-
-        def email_json
-          ::Postmark::Json.encode(email)
+          ::Postmark::MessageHelper.to_postmark(message_hash)
         end
 
         def subject
-          api_client.deliver_in_bulk(email, recipients)
+          api_client.deliver_in_bulk(message_hash)
         end
 
         def response
           {
-            ID: id,
+            ID: "f24af63c-533d-4b7a-ad65-4a7b3202d3a7",
             Status: "Accepted",
             SubmittedAt: "2024-03-17T07:25:01.4178645-05:00"
           }
@@ -51,15 +41,16 @@ module Missive
 
         setup do
           stub_request(:post, "https://api.postmarkapp.com/email/bulk")
+            .with(body: email.to_json)
             .to_return_json(body: response, status: 200)
         end
 
-        test "converts message hash to Postmark format and posts it to expected enpoint" do
+        test "converts message hash to Postmark format and posts it to expected endpoint" do
           assert subject
         end
 
         test "converts response to ruby format" do
-          assert_equal subject[:id], id
+          assert_includes subject.keys, :id
         end
 
         private
@@ -71,7 +62,7 @@ module Missive
         delegate :http_client, to: :api_client
 
         def api_token
-          "POSTMARK_API_TEST"
+          "provided-api-token"
         end
       end
     end

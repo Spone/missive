@@ -28,7 +28,7 @@ module Missive
             .to_return_json(body: response, status: 200)
         end
 
-        test "requests the bulk status from the expected enpoint" do
+        test "requests the bulk status from the expected endpoint" do
           assert subject
         end
 
