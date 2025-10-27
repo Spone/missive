@@ -25,6 +25,7 @@ module Missive
           response, error = take_response_of { http_client.post("email/bulk", data) }
           update_message(message, response)
           raise error if error
+
           format_response(response, compatible: true)
         end
       end
