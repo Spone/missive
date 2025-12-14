@@ -55,6 +55,12 @@ A lightweight Rails toolkit for building newsletter features. Missive provides t
 bundle add missive
 ```
 
+Install the migrations:
+
+```bash
+rails generate missive:install
+```
+
 ### Configuration
 
 Missive uses the same configuration as `postmark-rails`. Please follow the [`postmark-rails` configuration instructions](https://github.com/ActiveCampaign/postmark-rails?tab=readme-ov-file#installation) to set up your Postmark API credentials.

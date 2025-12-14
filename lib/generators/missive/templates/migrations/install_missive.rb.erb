@@ -1,0 +1,74 @@
+class InstallMissive < <%= migration_class_name %>
+  def change
+    create_table :missive_subscribers do |t|
+      t.string :email, null: false
+      t.timestamp :suppressed_at
+      t.integer :suppression_reason
+      t.references :user, foreign_key: true
+
+      t.timestamps
+    end
+
+    create_table :missive_lists do |t|
+      t.string :name, null: false
+      t.integer :subscriptions_count, default: 0
+      t.integer :messages_count, default: 0
+      t.timestamp :last_message_sent_at
+      t.string :postmark_message_stream_id
+
+      t.timestamps
+    end
+
+    create_table :missive_messages do |t|
+      t.string :subject, null: false
+      t.integer :dispatches_count, default: 0
+      t.references :list, null: false, foreign_key: {to_table: "missive_lists"}
+      t.string :postmark_message_stream_id
+      t.timestamp :sent_at
+
+      t.timestamps
+    end
+
+    create_table :missive_dispatches do |t|
+      t.references :subscriber, null: false, foreign_key: {to_table: "missive_subscribers"}
+      t.references :message, null: false, foreign_key: {to_table: "missive_messages"}
+      t.string :postmark_message_stream_id
+      t.string :postmark_message_id
+      t.timestamp :sent_at
+      t.timestamp :delivered_at
+      t.timestamp :opened_at
+      t.timestamp :clicked_at
+      t.timestamp :suppressed_at
+      t.integer :suppression_reason
+
+      t.index [:subscriber_id, :message_id], unique: true
+
+      t.timestamps
+    end
+
+    create_table :missive_subscriptions do |t|
+      t.references :subscriber, null: false, foreign_key: {to_table: "missive_subscribers"}
+      t.references :list, null: false, foreign_key: {to_table: "missive_lists"}
+      t.timestamp :suppressed_at
+      t.integer :suppression_reason
+
+      t.index [:subscriber_id, :list_id], unique: true
+
+      t.timestamps
+    end
+
+    create_table :missive_senders do |t|
+      t.string :email, null: false
+      t.string :name
+      t.string :reply_to_email
+      t.integer :postmark_sender_signature_id
+      t.references :user, foreign_key: false
+
+      t.timestamps
+    end
+
+    add_reference :missive_dispatches, :sender, null: false, foreign_key: {to_table: "missive_senders"}
+    add_reference :missive_lists, :sender, null: false, foreign_key: {to_table: "missive_senders"}
+    add_reference :missive_messages, :sender, null: false, foreign_key: {to_table: "missive_senders"}
+  end
+end
