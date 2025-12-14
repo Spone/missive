@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    missive (0.0.1)
+    missive (0.0.2)
       postmark-rails (>= 0.22.1)
       rails (>= 8.0.0)
       rails-pattern_matching (>= 0.3.0)
