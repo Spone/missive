@@ -1,5 +1,11 @@
 ## [Unreleased]
 
+## [0.0.3] - 2026-02-04
+
+- Add associations collision checks and configuration
+
+## [0.0.2] - 2025-12-14
+
 - Add install generator
 - Add Postmark Bulk API implementation
 
