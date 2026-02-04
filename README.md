@@ -113,6 +113,54 @@ class User < ApplicationRecord
 end
 ```
 
+#### Customizing association names
+
+If your User model already has associations named `sender` or `subscriber`, you can customize the association names:
+
+```rb
+class User < ApplicationRecord
+  include Missive::User
+  configure_missive_sender(
+    sender: :missive_sender,
+    sent_dispatches: :missive_sent_dispatches,
+    sent_lists: :missive_sent_lists,
+    sent_messages: :missive_sent_messages
+  )
+  configure_missive_subscriber(
+    subscriber: :missive_subscriber,
+    dispatches: :missive_dispatches,
+    subscriptions: :missive_subscriptions,
+    subscribed_lists: :missive_subscribed_lists,
+    unsubscribed_lists: :missive_unsubscribed_lists
+  )
+end
+```
+
+Or, if including the concerns separately:
+
+```rb
+class User < ApplicationRecord
+  include Missive::UserAsSender
+  configure_missive_sender(
+    sender: :missive_sender,
+    sent_dispatches: :missive_sent_dispatches,
+    sent_lists: :missive_sent_lists,
+    sent_messages: :missive_sent_messages
+  )
+
+  include Missive::UserAsSubscriber
+  configure_missive_subscriber(
+    subscriber: :missive_subscriber,
+    dispatches: :missive_dispatches,
+    subscriptions: :missive_subscriptions,
+    subscribed_lists: :missive_subscribed_lists,
+    unsubscribed_lists: :missive_unsubscribed_lists
+  )
+end
+```
+
+You only need to customize the associations that conflict - any unconfigured associations will use their default names.
+
 #### Manage subscriptions
 
 ```rb

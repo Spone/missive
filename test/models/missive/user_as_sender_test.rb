@@ -104,4 +104,65 @@ module Missive
       assert_equal [message], user.sent_messages
     end
   end
+
+  class UserAsSenderConfigurationTest < ActiveSupport::TestCase
+    class UserWithCustomSender < ApplicationRecord
+      self.table_name = "users"
+      include Missive::UserAsSender
+
+      configure_missive_sender(
+        sender: :missive_sender,
+        sent_dispatches: :missive_sent_dispatches,
+        sent_lists: :missive_sent_lists,
+        sent_messages: :missive_sent_messages
+      )
+    end
+
+    test "responds to custom association names" do
+      user = UserWithCustomSender.new
+      assert user.respond_to?(:missive_sender)
+      assert user.respond_to?(:missive_sent_dispatches)
+      assert user.respond_to?(:missive_sent_lists)
+      assert user.respond_to?(:missive_sent_messages)
+    end
+
+    test "stores custom configuration" do
+      assert_equal :missive_sender, UserWithCustomSender.missive_sender_config[:sender]
+      assert_equal :missive_sent_dispatches, UserWithCustomSender.missive_sender_config[:sent_dispatches]
+    end
+
+    test "init_sender works with custom association name" do
+      user = UserWithCustomSender.create!(email: "custom@example.com")
+      sender = user.init_sender
+      assert sender.persisted?
+      assert_equal user.email, user.missive_sender.email
+    end
+
+    test "init_sender with attributes works with custom association name" do
+      user = UserWithCustomSender.create!(email: "custom@example.com")
+      user.init_sender(name: "Custom Name")
+      assert_equal "Custom Name", user.missive_sender.name
+    end
+
+    test "through associations work with custom names" do
+      user = UserWithCustomSender.create!(email: "custom@example.com")
+      user.init_sender
+      list = missive_lists(:newsletter)
+      user.missive_sender.lists << list
+      assert_equal [list], user.missive_sent_lists
+    end
+
+    test "raises error when sender association already exists" do
+      error = assert_raises(Missive::UserAsSender::AssociationAlreadyDefinedError) do
+        Class.new(ApplicationRecord) do
+          self.table_name = "users"
+          has_one :sender
+          include Missive::UserAsSender
+        end
+      end
+
+      assert_match(/Association :sender is already defined/, error.message)
+      assert_match(/configure_missive_sender/, error.message)
+    end
+  end
 end
