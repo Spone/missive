@@ -1,5 +1,9 @@
 ## [Unreleased]
 
+## [0.0.4] - 2026-02-04
+
+- Fix associations collision checks and configuration
+
 ## [0.0.3] - 2026-02-04
 
 - Add associations collision checks and configuration
