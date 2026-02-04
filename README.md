@@ -91,21 +91,21 @@ This is equivalent to:
 ```rb
 class User < ApplicationRecord
   # Missive::UserAsSender
-  has_one :sender # ...
-  has_many :sent_dispatches # ...
-  has_many :sent_lists # ...
-  has_many :sent_messages # ...
+  has_one :missive_sender # ...
+  has_many :missive_sent_dispatches # ...
+  has_many :missive_sent_lists # ...
+  has_many :missive_sent_messages # ...
 
   def init_sender(attributes = {});
     # ...
   end
 
   # Missive::UserAsSubscriber
-  has_one :subscriber # ...
-  has_many :dispatches # ...
-  has_many :subscriptions # ...
-  has_many :subscribed_lists # ...
-  has_many :unsubscribed_lists # ...
+  has_one :missive_subscriber # ...
+  has_many :missive_dispatches # ...
+  has_many :missive_subscriptions # ...
+  has_many :missive_subscribed_lists # ...
+  has_many :missive_unsubscribed_lists # ...
 
   def init_subscriber(attributes = {})
     # ...
@@ -115,23 +115,24 @@ end
 
 #### Customizing association names
 
-If your User model already has associations named `sender` or `subscriber`, you can customize the association names:
+By default, association names are prefixed with `missive_` to avoid collisions with existing associations. If you want to use shorter names (e.g., `sender` instead of `missive_sender`), you can customize them using the `.with` method:
 
 ```rb
 class User < ApplicationRecord
-  include Missive::User
-  configure_missive_sender(
-    sender: :missive_sender,
-    sent_dispatches: :missive_sent_dispatches,
-    sent_lists: :missive_sent_lists,
-    sent_messages: :missive_sent_messages
-  )
-  configure_missive_subscriber(
-    subscriber: :missive_subscriber,
-    dispatches: :missive_dispatches,
-    subscriptions: :missive_subscriptions,
-    subscribed_lists: :missive_subscribed_lists,
-    unsubscribed_lists: :missive_unsubscribed_lists
+  include Missive::User.with(
+    sender: {
+      sender: :sender,
+      sent_dispatches: :sent_dispatches,
+      sent_lists: :sent_lists,
+      sent_messages: :sent_messages
+    },
+    subscriber: {
+      subscriber: :subscriber,
+      dispatches: :dispatches,
+      subscriptions: :subscriptions,
+      subscribed_lists: :subscribed_lists,
+      unsubscribed_lists: :unsubscribed_lists
+    }
   )
 end
 ```
@@ -140,26 +141,24 @@ Or, if including the concerns separately:
 
 ```rb
 class User < ApplicationRecord
-  include Missive::UserAsSender
-  configure_missive_sender(
-    sender: :missive_sender,
-    sent_dispatches: :missive_sent_dispatches,
-    sent_lists: :missive_sent_lists,
-    sent_messages: :missive_sent_messages
+  include Missive::UserAsSender.with(
+    sender: :sender,
+    sent_dispatches: :sent_dispatches,
+    sent_lists: :sent_lists,
+    sent_messages: :sent_messages
   )
 
-  include Missive::UserAsSubscriber
-  configure_missive_subscriber(
-    subscriber: :missive_subscriber,
-    dispatches: :missive_dispatches,
-    subscriptions: :missive_subscriptions,
-    subscribed_lists: :missive_subscribed_lists,
-    unsubscribed_lists: :missive_unsubscribed_lists
+  include Missive::UserAsSubscriber.with(
+    subscriber: :subscriber,
+    dispatches: :dispatches,
+    subscriptions: :subscriptions,
+    subscribed_lists: :subscribed_lists,
+    unsubscribed_lists: :unsubscribed_lists
   )
 end
 ```
 
-You only need to customize the associations that conflict - any unconfigured associations will use their default names.
+You only need to customize the associations you want to rename - any unconfigured associations will use their default `missive_` prefixed names.
 
 #### Manage subscriptions
 
@@ -173,17 +172,17 @@ list = Missive::List.first
 user.init_subscriber
 
 # List the subscriptions
-user.subscriptions # returns a `Missive::Subscription` collection
+user.missive_subscriptions # returns a `Missive::Subscription` collection
 
 # List the (un)subscribed lists
-user.subscribed_lists # returns a `Missive::List` collection
-user.unsubscribed_lists # returns a `Missive::List` collection
+user.missive_subscribed_lists # returns a `Missive::List` collection
+user.missive_unsubscribed_lists # returns a `Missive::List` collection
 
 # Subscribe to an existing Missive::List
-user.subscriber.subscriptions.create!(list:)
+user.missive_subscriber.subscriptions.create!(list:)
 
 # Unsubscribe from the list
-user.subscriptions.find_by(list:).suppress!(reason: :manual_suppression)
+user.missive_subscriptions.find_by(list:).suppress!(reason: :manual_suppression)
 ```
 
 #### Manage senders
@@ -199,7 +198,7 @@ list = Missive::List.first
 user.init_sender(name: user.full_name)
 
 # Make them the default sender for a list
-user.sent_lists << list
+user.missive_sent_lists << list
 ```
 
 #### Manage lists

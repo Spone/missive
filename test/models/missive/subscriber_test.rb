@@ -7,7 +7,7 @@ module Missive
       user = ::User.create!(email:)
       subscriber = Subscriber.create!(email:, user:)
       assert_equal user, subscriber.user
-      assert_equal user.subscriber, subscriber
+      assert_equal user.missive_subscriber, subscriber
     end
 
     test "has many dispatches" do

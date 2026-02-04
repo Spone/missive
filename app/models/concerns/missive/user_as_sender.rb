@@ -4,16 +4,33 @@ module Missive
 
     class AssociationAlreadyDefinedError < StandardError; end
 
-    ASSOCIATION_NAMES = %i[sender sent_dispatches sent_lists sent_messages].freeze
+    DEFAULT_ASSOCIATION_NAMES = {
+      sender: :missive_sender,
+      sent_dispatches: :missive_sent_dispatches,
+      sent_lists: :missive_sent_lists,
+      sent_messages: :missive_sent_messages
+    }.freeze
 
-    class_methods do
-      def missive_sender_config
-        @missive_sender_config ||= ASSOCIATION_NAMES.index_with { |name| name }
+    def self.with(options = {})
+      config = DEFAULT_ASSOCIATION_NAMES.merge(options)
+
+      Module.new do
+        extend ActiveSupport::Concern
+
+        define_singleton_method(:inspect) { "Missive::UserAsSender.with(#{options.inspect})" }
+
+        included do |base|
+          base.instance_variable_set(:@missive_sender_config, config)
+          base.extend(ClassMethods)
+          base.include(InstanceMethods)
+          base._define_missive_sender_associations
+        end
       end
+    end
 
-      def configure_missive_sender(options = {})
-        missive_sender_config.merge!(options)
-        _define_missive_sender_associations
+    module ClassMethods
+      def missive_sender_config
+        @missive_sender_config ||= DEFAULT_ASSOCIATION_NAMES.dup
       end
 
       def _define_missive_sender_associations
@@ -32,14 +49,12 @@ module Missive
 
         raise AssociationAlreadyDefinedError,
           "Association :#{name} is already defined on #{self.name}. " \
-          "Use configure_missive_sender to specify a different name. " \
-          "Example: configure_missive_sender(sender: :missive_sender)"
+          "Use Missive::UserAsSender.with to specify a different name. " \
+          "Example: include Missive::UserAsSender.with(sender: :missive_sender)"
       end
     end
 
-    included do
-      _define_missive_sender_associations
-
+    module InstanceMethods
       def init_sender(attributes = {})
         assoc = self.class.missive_sender_config[:sender]
         send("#{assoc}=", Missive::Sender.find_or_initialize_by(email:))
@@ -47,6 +62,12 @@ module Missive
         send(assoc).save!
         send(assoc)
       end
+    end
+
+    included do |base|
+      base.extend(ClassMethods)
+      base.include(InstanceMethods)
+      base._define_missive_sender_associations
     end
   end
 end
