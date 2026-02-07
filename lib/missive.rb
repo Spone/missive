@@ -4,5 +4,7 @@ require "postmark"
 require "missive/stamp/api_client"
 
 module Missive
-  # Your code goes here...
+  # Configuration
+  mattr_accessor :mailer_from_email, default: "noreply@example.com"
+  mattr_accessor :mailer_from_name, default: "Missive"
 end
